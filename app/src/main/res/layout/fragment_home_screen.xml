@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.bhagavadgitaapp.ui.viewmodel.HomeScreenViewModel" />
+    </data>
+    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/_16dp"
+    tools:context=".ui.fragment.FragmentHomeScreen">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:indeterminateOnly="true"
+                app:indicatorColor="@color/primaryColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/verseOfTheDayCard"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_bg"
+                app:cardCornerRadius="@dimen/_10dp"
+                >
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:padding="@dimen/_16dp"
+                    android:background="@drawable/card_bg"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/cardTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/verse_of_the_day"
+                        style="@style/textTitle"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        />
+
+                    <TextView
+                        android:id="@+id/verse"
+                        app:layout_constraintTop_toBottomOf="@id/cardTitle"
+                        android:layout_marginTop="@dimen/_16dp"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/_14sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dummy_verse" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tvLastRead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/verseOfTheDayCard"
+                android:text="@string/last_read"
+                style="@style/textTitle"
+                android:textColor="@color/black"
+                android:layout_marginTop="@dimen/_16dp"
+                />
+
+            <TextView
+                android:id="@+id/tvLastReadVerse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dummy_verse"
+                app:layout_constraintTop_toBottomOf="@id/tvLastRead"
+                android:layout_marginTop="@dimen/_16dp"/>
+
+            <Button
+                android:id="@+id/btnContinueReading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:text="@string/continue_reading"
+                app:layout_constraintTop_toBottomOf="@id/tvLastReadVerse"
+                android:textColor="@color/primaryColor"
+                android:backgroundTint="@android:color/transparent"
+                android:padding="@dimen/_0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvChapters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/chapters"
+                style="@style/textTitleBlack"
+                app:layout_constraintTop_toBottomOf="@id/btnContinueReading"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="@dimen/_16dp"/>
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnFliter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/transparent"
+                android:src="@drawable/baseline_sort_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvChapters"
+                app:layout_constraintBottom_toBottomOf="@id/tvChapters"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvChapter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/tvChapters"
+                android:layout_marginTop="@dimen/_16dp"
+                android:nestedScrollingEnabled="false" />
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
+</layout>

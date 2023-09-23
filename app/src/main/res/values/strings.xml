@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">BhagavadGitaApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="verse_of_the_day">VERSE OF THE DAY</string>
+    <string name="dummy_verse">The sixth chapter of the Bhagavad Gita is Dhyana Yoga. In this chapter, Krishna reveals the Yoga of Meditation and how to practise this Yoga. He discusses the role of action in preparing for Meditation, how performing duties in devotion purifies one\'s mind and heightens one\'s spiritual consciousness. He explains in detail the obstacles that one faces when trying to control their mind and the exact methods by which one can conquer their mind. He reveals how one can focus their mind on Paramatma and unite with the God.</string>
+    <string name="last_read">Last Read</string>
+    <string name="continue_reading">Continue Reading</string>
+    <string name="chapters">Chapters</string>
+    <string name="loading">Loading...</string>
 </resources>
