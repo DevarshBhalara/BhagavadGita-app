@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.bhagavadgitaapp.ui.viewmodel.ChapterDetailViewModel" />
+
+        <variable
+            name="chapter"
+            type="com.example.bhagavadgitaapp.data.local.ChapterDetailLocal" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/_16dp"
+        tools:context=".ui.fragment.FragmentChapterDetail">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/loadingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateOnly="true"
+            android:elevation="@dimen/_8dp"
+            app:indicatorColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvChapterNumber"
+            style="@style/textTitlePrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16dp"
+            android:text="@{ chapter == null ? `Loading...` : `Chapter `+ chapter.chapterNumber}"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Chapter 1" />
+
+        <TextView
+            android:id="@+id/chapterTitle"
+            style="@style/textTitleBlack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16dp"
+            android:text="@{ chapter == null ? `Loading...` : chapter.userSelectedName +` ( ` + chapter.userSelectedLanguageMeaning +` ) `}"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/tvChapterNumber"
+            tools:text="Arjuna Visad Yoga" />
+
+        <TextView
+            android:id="@+id/chapterSummery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16dp"
+            android:text="@{ chapter.userSelectedLanguageSummary }"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/chapterTitle"
+            tools:text="@string/dummy_verse" />
+
+        <TextView
+            android:id="@+id/tvVerseCount"
+            style="@style/textTitlePrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16dp"
+            android:text="@{ chapter == null ? `Loading...` : `Total Verse are `+ chapter.versesCount}"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/chapterSummery"
+            tools:text="Total Verse are 11" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewAllVerse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16dp"
+            android:backgroundTint="@color/primaryColor"
+            android:text="@string/view_all_verse"
+            app:cornerRadius="@dimen/_8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvVerseCount" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_8dp"
+            android:backgroundTint="@color/primaryColor"
+            android:contentDescription="@string/next"
+            android:src="@drawable/baseline_navigate_next_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_8dp"
+            android:backgroundTint="@color/primaryColor"
+            android:contentDescription="@string/next"
+            android:src="@drawable/baseline_navigate_before_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

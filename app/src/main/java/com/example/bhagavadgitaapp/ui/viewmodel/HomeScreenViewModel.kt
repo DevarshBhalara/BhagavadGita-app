@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bhagavadgitaapp.data.local.DisplayRandomSlok
 import com.example.bhagavadgitaapp.data.remote.Chapter
-import com.example.bhagavadgitaapp.data.repository.HomeRepository
+import com.example.bhagavadgitaapp.ui.repository.HomeRepository
 import com.example.bhagavadgitaapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
