@@ -9,6 +9,23 @@
         android:name="com.example.bhagavadgitaapp.ui.fragment.FragmentHomeScreen"
         tools:layout="@layout/fragment_home_screen"
         android:label="Bhagavad Geeta"
-        android:id="@+id/homeFragment" />
+        android:id="@+id/homeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_chapterDetail"
+            app:destination="@id/chapterDetail" />
+    </fragment>
+
+    <fragment
+        android:name="com.example.bhagavadgitaapp.ui.fragment.FragmentChapterDetail"
+        tools:layout="@layout/fragment_chapter_detail"
+        android:label="@string/chapters"
+        android:id="@+id/chapterDetail">
+
+        <argument
+            android:name="chapterNumber"
+            app:argType="string"
+            />
+
+    </fragment>
 
 </navigation>

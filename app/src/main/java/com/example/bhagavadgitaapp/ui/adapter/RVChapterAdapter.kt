@@ -7,12 +7,24 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bhagavadgitaapp.data.remote.Chapter
 import com.example.bhagavadgitaapp.databinding.ItemChaptersBinding
+import com.example.bhagavadgitaapp.listners.ItemClickListener
 
 class RVChapterAdapter: RecyclerView.Adapter<RVChapterAdapter.ViewHolder>() {
 
     private var chapters = mutableListOf<Chapter>()
+    var itemClickListener: ItemClickListener<Chapter>? = null
 
-    class ViewHolder(private val binding: ItemChaptersBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ItemChaptersBinding): RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener {
+                itemClickListener?.onClick(
+                    chapters[adapterPosition],
+                    adapterPosition
+                )
+            }
+        }
+
         fun bind(chapter: Chapter) {
             binding.chapter = chapter
         }

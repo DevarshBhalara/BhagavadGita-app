@@ -1,4 +1,4 @@
-package com.example.bhagavadgitaapp.data.repository
+package com.example.bhagavadgitaapp.ui.repository
 
 import android.util.Log
 import com.example.bhagavadgitaapp.data.local.DisplayRandomSlok

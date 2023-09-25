@@ -6,15 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.bhagavadgitaapp.R
-import com.example.bhagavadgitaapp.data.local.DisplayRandomSlok
+import com.example.bhagavadgitaapp.data.remote.Chapter
 import com.example.bhagavadgitaapp.databinding.FragmentHomeScreenBinding
-import com.example.bhagavadgitaapp.databinding.FragmentHomeScreenBindingImpl
+import com.example.bhagavadgitaapp.helper.PreferenceHelper
+import com.example.bhagavadgitaapp.listners.ItemClickListener
 import com.example.bhagavadgitaapp.ui.adapter.RVChapterAdapter
 import com.example.bhagavadgitaapp.ui.viewmodel.HomeScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,10 +67,27 @@ class FragmentHomeScreen : Fragment() {
         }
 
     private fun setupUI() {
+        val preferenceHelper = PreferenceHelper(requireContext())
+        preferenceHelper.putString("lan","en")
+
+
         binding.verse.text = getString(R.string.loading)
         val (ch, slok) = calculateRandomSlokNumber()
         viewModel.getRandomSlok(ch, slok)
         binding.rvChapter.adapter = adapter
+        adapter.itemClickListener = object : ItemClickListener<Chapter> {
+            override fun onClick(item: Chapter, position: Int) {
+                navigateToChapterDetail(item.chapterNumber)
+            }
+
+        }
+    }
+
+    private fun navigateToChapterDetail(item: Int?) {
+        item?.let { chapterNumber ->
+            val destination = FragmentHomeScreenDirections.actionHomeFragmentToChapterDetail(chapterNumber.toString())
+            findNavController().navigate(destination)
+        }
     }
 
     private fun calculateRandomSlokNumber(): Pair<Int, Int> {

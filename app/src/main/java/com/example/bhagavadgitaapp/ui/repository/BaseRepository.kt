@@ -1,4 +1,4 @@
-package com.example.bhagavadgitaapp.data.repository
+package com.example.bhagavadgitaapp.ui.repository
 
 import com.example.bhagavadgitaapp.utils.Resource
 import com.google.gson.Gson

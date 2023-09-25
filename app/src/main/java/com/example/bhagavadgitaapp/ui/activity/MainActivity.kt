@@ -1,11 +1,10 @@
-package com.example.bhagavadgitaapp.ui.view
+package com.example.bhagavadgitaapp.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
