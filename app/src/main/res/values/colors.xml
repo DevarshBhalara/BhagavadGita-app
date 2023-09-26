@@ -3,8 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="primaryColor">#edb13a</color>
+    <color name="primaryColor">#AE822B</color>
     <color name="lightPrimary">#FFDE9D</color>
     <color name="darkPrimaryText">#FF511A</color>
     <color name="cardBG">#FFF3F0</color>
+
+    <color name="background">#dddddd</color>
 </resources>

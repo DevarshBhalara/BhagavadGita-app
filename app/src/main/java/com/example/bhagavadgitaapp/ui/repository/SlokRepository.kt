@@ -1,7 +1,6 @@
 package com.example.bhagavadgitaapp.ui.repository
 
 import android.util.Log
-import com.example.bhagavadgitaapp.data.remote.Chapter
 import com.example.bhagavadgitaapp.data.remote.Slok
 import com.example.bhagavadgitaapp.data.services.ApiService
 import com.example.bhagavadgitaapp.utils.Resource
@@ -10,9 +9,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.lang.Exception
 
-class HomeRepository(private val apiService: ApiService) : BaseRepository() {
+class SlokRepository(private val apiService: ApiService): BaseRepository() {
 
-    suspend fun getRandomSlok(ch: Int, slok: Int) = flow<Resource<Slok>> {
+    suspend fun getSlok(ch: Int, slok: Int) = flow<Resource<Slok>> {
         emit(Resource.Loading())
         try {
             apiService.getSlok(ch, slok).let { response ->
@@ -20,20 +19,8 @@ class HomeRepository(private val apiService: ApiService) : BaseRepository() {
                 emit(resource)
             }
         } catch (e: Exception) {
-            Log.d("response", e.localizedMessage)
+            e.localizedMessage?.let { Log.d("response", it) }
         }
 
-    }.flowOn(Dispatchers.IO)
-
-    suspend fun getChapters() = flow<Resource<ArrayList<Chapter>>> {
-        emit(Resource.Loading())
-        try {
-            apiService.getChapters().let { response ->
-                val resource = handleResponse(response)
-                emit(resource)
-            }
-        } catch (e: Exception) {
-            Log.d("response", e.localizedMessage)
-        }
     }.flowOn(Dispatchers.IO)
 }

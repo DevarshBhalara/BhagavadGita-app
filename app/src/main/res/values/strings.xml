@@ -7,10 +7,13 @@
     <string name="last_read">Last Read</string>
     <string name="continue_reading">Continue Reading</string>
     <string name="chapters">Chapters</string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="aa">Aa</string>
     <string name="view_all_verse">View All Verse</string>
     <string name="next">Next</string>
     <string name="hindi">Hindi</string>
     <string name="english">English</string>
+    <string name="translation">Translation</string>
+    <string name="transliteration">Transliteration</string>
+    <string name="translation_by_different_authors">Translation by Different Authors</string>
 </resources>
