@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="translations"
+            type="com.example.bhagavadgitaapp.data.local.TranslationOrCommentary" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/title"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Title"
+            android:layout_marginTop="@dimen/_8dp"
+            style="@style/textTitleBlack"
+            android:textSize="@dimen/_16sp"
+            android:textAlignment="center"
+            android:text="@{translations.title}"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:text="@string/dummy_verse"
+            android:textColor="@color/black"
+            android:padding="@dimen/_16dp"
+            android:text="@{translations.content}"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

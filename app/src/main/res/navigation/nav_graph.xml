@@ -25,7 +25,27 @@
             android:name="chapterNumber"
             app:argType="string"
             />
+        <action
+            android:id="@+id/action_chapterDetail_to_verse"
+            app:destination="@id/verse" />
 
     </fragment>
+
+    <fragment
+        android:name="com.example.bhagavadgitaapp.ui.fragment.FragmentViewAllVerseTabLayout"
+        tools:layout="@layout/fragment_view_all_verse_tab_layout"
+        android:id="@+id/verse">
+
+        <argument
+            android:name="verseCount"
+            app:argType="string"
+            />
+
+        <argument
+            android:name="chapter"
+            app:argType="string" />
+
+    </fragment>
+
 
 </navigation>

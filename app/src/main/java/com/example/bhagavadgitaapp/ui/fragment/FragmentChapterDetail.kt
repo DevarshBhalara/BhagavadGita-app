@@ -8,17 +8,16 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.local.ChapterDetailLocal
 import com.example.bhagavadgitaapp.databinding.FragmentChapterDetailBinding
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
-import com.example.bhagavadgitaapp.ui.activity.MainActivity
 import com.example.bhagavadgitaapp.ui.viewmodel.ChapterDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -33,6 +32,7 @@ class FragmentChapterDetail : Fragment() {
     private var chapterNumber: String = ""
     private lateinit var preferenceHelper: PreferenceHelper
     lateinit var chapterLocal: ChapterDetailLocal
+    private var verseCount: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +53,7 @@ class FragmentChapterDetail : Fragment() {
             launch {
                 viewModel.chapter.collectLatest { chapter ->
                     chapter?.let {
+                        verseCount = chapter.versesCount ?: 0
                         val selectedLanguage = preferenceHelper.getString("lan", "en")
                         if (selectedLanguage == "hi") {
                             it.userSelectedLanguageMeaning = it.meaningHindi
@@ -73,6 +74,10 @@ class FragmentChapterDetail : Fragment() {
     private fun setupUI() {
         preferenceHelper = PreferenceHelper(requireContext())
         chapterNumber = navArgs.chapterNumber
+        binding.btnViewAllVerse.setOnClickListener {
+            val destination = FragmentChapterDetailDirections.actionChapterDetailToVerse(verseCount.toString(), chapterNumber)
+            findNavController().navigate(destination)
+        }
         getChapterDetails()
         setupMenuBar()
         handleNextPrevious()

@@ -7,4 +7,17 @@
     <dimen name="_14sp">14sp</dimen>
     <dimen name="_0dp">0dp</dimen>
     <dimen name="_12dp">12dp</dimen>
+    <dimen name="_20sp">20sp</dimen>
+    <dimen name="_32sp">32sp</dimen>
+    <dimen name="_24dp">24dp</dimen>
+    <dimen name="_32dp">32dp</dimen>
+    <dimen name="_16sp">16sp</dimen>
+
+    <dimen name="activityPadding">16dp</dimen>
+    <dimen name="placeholderImage">60dp</dimen>
+    <dimen name="placeholderTextHeight">8dp</dimen>
+    <dimen name="padding_10">10dp</dimen>
+    <dimen name="_150dp">150dp</dimen>
+    <dimen name="_50dp">50dp</dimen>
+    <dimen name="_26dp">26dp</dimen>
 </resources>

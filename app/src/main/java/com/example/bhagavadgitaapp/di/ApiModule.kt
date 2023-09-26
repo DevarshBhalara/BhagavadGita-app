@@ -3,6 +3,7 @@ package com.example.bhagavadgitaapp.di
 import com.example.bhagavadgitaapp.ui.repository.HomeRepository
 import com.example.bhagavadgitaapp.data.services.ApiService
 import com.example.bhagavadgitaapp.ui.repository.ChapterDetailRepository
+import com.example.bhagavadgitaapp.ui.repository.SlokRepository
 import com.example.bhagavadgitaapp.utils.AppConstants
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -45,4 +46,9 @@ class ApiModule {
     @Singleton
     fun provideChapterDetailRepository(apiService: ApiService): ChapterDetailRepository =
         ChapterDetailRepository(apiService)
+
+    @Provides
+    @Singleton
+    fun provideSlokRepository(apiService: ApiService): SlokRepository =
+        SlokRepository(apiService)
 }
