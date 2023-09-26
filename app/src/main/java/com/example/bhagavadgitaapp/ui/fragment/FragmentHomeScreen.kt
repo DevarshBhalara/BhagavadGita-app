@@ -1,5 +1,6 @@
 package com.example.bhagavadgitaapp.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,7 +10,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.remote.Chapter
 import com.example.bhagavadgitaapp.databinding.FragmentHomeScreenBinding
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
@@ -42,19 +42,25 @@ class FragmentHomeScreen : Fragment() {
         observers()
     }
 
+        @SuppressLint("UseCompatLoadingForDrawables")
         private fun observers() {
             viewLifecycleOwner.lifecycleScope.launch {
                 launch {
                     viewModel.errorMessage.collectLatest {
                         if(it.isNotEmpty()) {
-                            Log.e("reponse", it)
+                            Log.e("error", it)
                         }
                     }
                 }
 
                 launch {
                     viewModel.randomSlok.collectLatest {
-                        binding.verse.text = it?.slok
+                        it?.slok?.let {  slok ->
+                            binding.verse.text = slok
+                            binding.shimmerLayout.stopShimmer()
+                            binding.shimmerLayout.visibility = View.GONE
+                            binding.isDataAvailable = true
+                        }
                     }
                 }
 
@@ -67,20 +73,27 @@ class FragmentHomeScreen : Fragment() {
         }
 
     private fun setupUI() {
+        binding.isDataAvailable = false
         val preferenceHelper = PreferenceHelper(requireContext())
         preferenceHelper.putString("lan","en")
 
-
-        binding.verse.text = getString(R.string.loading)
         val (ch, slok) = calculateRandomSlokNumber()
         viewModel.getRandomSlok(ch, slok)
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
         binding.rvChapter.adapter = adapter
         adapter.itemClickListener = object : ItemClickListener<Chapter> {
             override fun onClick(item: Chapter, position: Int) {
                 navigateToChapterDetail(item.chapterNumber)
             }
-
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.shimmerLayout.visibility = View.VISIBLE
     }
 
     private fun navigateToChapterDetail(item: Int?) {

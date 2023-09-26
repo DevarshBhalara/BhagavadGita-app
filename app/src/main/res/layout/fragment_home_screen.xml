@@ -5,22 +5,55 @@
         <import type="android.view.View" />
 
         <variable
+            name="isDataAvailable"
+            type="boolean" />
+        <variable
             name="viewModel"
             type="com.example.bhagavadgitaapp.ui.viewmodel.HomeScreenViewModel" />
     </data>
     <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="@dimen/_16dp"
-    tools:context=".ui.fragment.FragmentHomeScreen">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:paddingHorizontal="@dimen/_16dp"
+        tools:context=".ui.fragment.FragmentHomeScreen">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             >
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/shimmerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:visibility="gone"
+                android:orientation="vertical"
+                >
+
+                <!-- Adding 7 rows of placeholders -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <include layout="@layout/data_placeholder_layout_home" />
+
+                    <include layout="@layout/data_placeholder_layout_chapter" />
+                    <include layout="@layout/data_placeholder_layout_chapter" />
+                    <include layout="@layout/data_placeholder_layout_chapter" />
+                    <include layout="@layout/data_placeholder_layout_chapter" />
+                    <include layout="@layout/data_placeholder_layout_chapter" />
+                    <include layout="@layout/data_placeholder_layout_chapter" />
+                </LinearLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,22 +68,24 @@
                 />
 
             <androidx.cardview.widget.CardView
+                android:layout_marginTop="@dimen/_16dp"
                 android:id="@+id/verseOfTheDayCard"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="match_parent"
+                android:visibility="@{isDataAvailable ? View.VISIBLE : View.INVISIBLE }"
                 android:layout_height="wrap_content"
-                android:background="@drawable/card_bg"
                 app:cardCornerRadius="@dimen/_10dp"
                 >
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:padding="@dimen/_16dp"
                     android:background="@drawable/card_bg"
                     android:layout_height="match_parent">
 
                     <TextView
                         android:id="@+id/cardTitle"
+                        android:paddingHorizontal="@dimen/_16dp"
+                        android:paddingTop="@dimen/_16dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/verse_of_the_day"
@@ -61,11 +96,15 @@
 
                     <TextView
                         android:id="@+id/verse"
+                        android:paddingHorizontal="@dimen/_16dp"
                         app:layout_constraintTop_toBottomOf="@id/cardTitle"
                         android:layout_marginTop="@dimen/_16dp"
                         android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:textStyle="bold"
+                        android:maxLines="4"
                         android:textSize="@dimen/_14sp"
+                        android:paddingBottom="@dimen/_16dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/dummy_verse" />
@@ -79,7 +118,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/verseOfTheDayCard"
-                android:text="@string/last_read"
+                android:text="@{ isDataAvailable ?  @string/last_read : `` }"
                 style="@style/textTitle"
                 android:textColor="@color/black"
                 android:layout_marginTop="@dimen/_16dp"
@@ -98,7 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAllCaps="true"
-                android:text="@string/continue_reading"
+                android:text="@{ isDataAvailable ? @string/continue_reading : `` }"
                 app:layout_constraintTop_toBottomOf="@id/tvLastReadVerse"
                 android:textColor="@color/primaryColor"
                 android:backgroundTint="@android:color/transparent"
@@ -110,7 +149,7 @@
                 android:id="@+id/tvChapters"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/chapters"
+                android:text="@{ isDataAvailable ? @string/chapters : `` }"
                 style="@style/textTitleBlack"
                 app:layout_constraintTop_toBottomOf="@id/btnContinueReading"
                 app:layout_constraintStart_toStartOf="parent"
@@ -134,8 +173,6 @@
                 app:layout_constraintTop_toBottomOf="@id/tvChapters"
                 android:layout_marginTop="@dimen/_16dp"
                 android:nestedScrollingEnabled="false" />
-
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
