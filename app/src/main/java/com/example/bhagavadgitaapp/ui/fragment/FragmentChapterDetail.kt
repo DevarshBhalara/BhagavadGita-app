@@ -149,5 +149,6 @@ class FragmentChapterDetail : Fragment() {
             chapterLocal.userSelectedLanguageSummary = chapterLocal.summaryEnglish
         }
         binding.chapter = chapterLocal
+        binding.executePendingBindings()
     }
 }
