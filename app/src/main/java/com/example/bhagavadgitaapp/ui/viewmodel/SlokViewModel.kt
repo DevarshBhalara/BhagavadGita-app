@@ -10,6 +10,7 @@ import com.example.bhagavadgitaapp.ui.repository.SlokRepository
 import com.example.bhagavadgitaapp.utils.AppConstants
 import com.example.bhagavadgitaapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -23,9 +24,11 @@ class SlokViewModel @Inject constructor(
 
     private val _slok = MutableStateFlow<SlokLocal?>(null)
     var slok = _slok.asStateFlow()
+    private var job: Job? = null
 
     fun getSlok(ch: Int, sl: Int) {
-        viewModelScope.launch {
+        job?.cancel()
+        job = viewModelScope.launch {
             slokRepository.getSlok(ch, sl).collectLatest { resourse ->
                 when(resourse) {
                     is Resource.Loading -> {

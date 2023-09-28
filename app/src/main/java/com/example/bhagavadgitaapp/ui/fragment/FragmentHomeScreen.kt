@@ -16,6 +16,7 @@ import com.example.bhagavadgitaapp.helper.PreferenceHelper
 import com.example.bhagavadgitaapp.listners.ItemClickListener
 import com.example.bhagavadgitaapp.ui.adapter.RVChapterAdapter
 import com.example.bhagavadgitaapp.ui.viewmodel.HomeScreenViewModel
+import com.example.bhagavadgitaapp.utils.AppConstants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -27,6 +28,7 @@ class FragmentHomeScreen : Fragment() {
     private lateinit var binding: FragmentHomeScreenBinding
     private val viewModel: HomeScreenViewModel by viewModels()
     private val adapter = RVChapterAdapter()
+    private lateinit var preferenceHelper: PreferenceHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,12 +76,34 @@ class FragmentHomeScreen : Fragment() {
 
     private fun setupUI() {
         binding.isDataAvailable = false
-        val preferenceHelper = PreferenceHelper(requireContext())
+        preferenceHelper = PreferenceHelper(requireContext())
         preferenceHelper.putString("lan","en")
+
+        getLastRead()
 
         val (ch, slok) = calculateRandomSlokNumber()
         viewModel.getRandomSlok(ch, slok)
         setupRecyclerView()
+    }
+
+    private fun getLastRead() {
+        val isLastReadAvailable = preferenceHelper.getBoolean("isLastRead", false)
+        if (isLastReadAvailable) {
+            binding.isLastReadAvailable = true
+            binding.tvLastReadVerse.text = preferenceHelper.getString(AppConstants.lastReadTranslationEnglish, "")
+        } else {
+            binding.isLastReadAvailable = false
+        }
+        Log.e("con", preferenceHelper.getString(AppConstants.lastChapterVerseCount, "1"))
+        Log.e("conCh", preferenceHelper.getString(AppConstants.lastReadChapter, "1"))
+        binding.btnContinueReading.setOnClickListener {
+            val destination = FragmentHomeScreenDirections.actionHomeFragmentToVerse(
+                preferenceHelper.getString(AppConstants.lastChapterVerseCount, "1"),
+                preferenceHelper.getString(AppConstants.lastReadChapter, "1"),
+                true
+            )
+            findNavController().navigate(destination)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -94,6 +118,7 @@ class FragmentHomeScreen : Fragment() {
     override fun onResume() {
         super.onResume()
         binding.shimmerLayout.visibility = View.VISIBLE
+        getLastRead()
     }
 
     private fun navigateToChapterDetail(item: Int?) {

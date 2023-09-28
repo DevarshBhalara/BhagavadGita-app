@@ -31,7 +31,7 @@ class FragmentChapterDetail : Fragment() {
     private val navArgs: FragmentChapterDetailArgs by navArgs()
     private var chapterNumber: String = ""
     private lateinit var preferenceHelper: PreferenceHelper
-    lateinit var chapterLocal: ChapterDetailLocal
+    private lateinit var chapterLocal: ChapterDetailLocal
     private var verseCount: Int = 0
 
     override fun onCreateView(
@@ -75,7 +75,7 @@ class FragmentChapterDetail : Fragment() {
         preferenceHelper = PreferenceHelper(requireContext())
         chapterNumber = navArgs.chapterNumber
         binding.btnViewAllVerse.setOnClickListener {
-            val destination = FragmentChapterDetailDirections.actionChapterDetailToVerse(verseCount.toString(), chapterNumber)
+            val destination = FragmentChapterDetailDirections.actionChapterDetailToVerse(verseCount.toString(), chapterNumber, false)
             findNavController().navigate(destination)
         }
         getChapterDetails()
