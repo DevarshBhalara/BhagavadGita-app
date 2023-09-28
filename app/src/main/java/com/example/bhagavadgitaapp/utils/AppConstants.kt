@@ -7,4 +7,12 @@ object AppConstants {
     const val SC = "Sanskrit Commentary"
     const val HT = "Hindi Translation"
     const val ET = "English Translation"
+
+    // SharedPreference
+    const val isLastRead = "isLastRead"
+    const val lastReadChapter = "lastReadChapter"
+    const val lastReadVerseNum = "lastReadVerseNum"
+    const val lastReadTranslationHindi = "lastReadTranslationHindi"
+    const val lastReadTranslationEnglish = "lastReadTranslationEnglish"
+    const val lastChapterVerseCount = "lastChapterVerseCount"
 }

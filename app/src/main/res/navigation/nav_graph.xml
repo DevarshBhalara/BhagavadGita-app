@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_chapterDetail"
             app:destination="@id/chapterDetail" />
+        <action
+            android:id="@+id/action_homeFragment_to_verse"
+            app:destination="@id/verse" />
     </fragment>
 
     <fragment
@@ -44,6 +47,10 @@
         <argument
             android:name="chapter"
             app:argType="string" />
+
+        <argument
+            android:name="isContinueReading"
+            app:argType="boolean" />
 
     </fragment>
 
