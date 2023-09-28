@@ -75,6 +75,7 @@ class FragmentHomeScreen : Fragment() {
         }
 
     private fun setupUI() {
+        binding.shimmerLayout.visibility = View.VISIBLE
         binding.isDataAvailable = false
         preferenceHelper = PreferenceHelper(requireContext())
         preferenceHelper.putString("lan","en")
@@ -84,6 +85,12 @@ class FragmentHomeScreen : Fragment() {
         val (ch, slok) = calculateRandomSlokNumber()
         viewModel.getRandomSlok(ch, slok)
         setupRecyclerView()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.shimmerLayout.stopShimmer()
+        binding.shimmerLayout.visibility = View.GONE
     }
 
     private fun getLastRead() {
@@ -117,7 +124,6 @@ class FragmentHomeScreen : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.shimmerLayout.visibility = View.VISIBLE
         getLastRead()
     }
 
