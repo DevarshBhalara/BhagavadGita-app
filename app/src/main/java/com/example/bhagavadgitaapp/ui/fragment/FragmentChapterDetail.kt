@@ -1,6 +1,7 @@
 package com.example.bhagavadgitaapp.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -69,6 +70,11 @@ class FragmentChapterDetail : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("lanCh", preferenceHelper.getString("lan", "NA"))
     }
 
     private fun setupUI() {

@@ -5,11 +5,18 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.bhagavadgitaapp.R
+import com.example.bhagavadgitaapp.data.local.HomeScreenLocal
 import com.example.bhagavadgitaapp.data.remote.Chapter
 import com.example.bhagavadgitaapp.databinding.FragmentHomeScreenBinding
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
@@ -29,6 +36,7 @@ class FragmentHomeScreen : Fragment() {
     private val viewModel: HomeScreenViewModel by viewModels()
     private val adapter = RVChapterAdapter()
     private lateinit var preferenceHelper: PreferenceHelper
+    private lateinit var slokDetailLocal: HomeScreenLocal
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,47 +52,96 @@ class FragmentHomeScreen : Fragment() {
         observers()
     }
 
-        @SuppressLint("UseCompatLoadingForDrawables")
-        private fun observers() {
-            viewLifecycleOwner.lifecycleScope.launch {
-                launch {
-                    viewModel.errorMessage.collectLatest {
-                        if(it.isNotEmpty()) {
-                            Log.e("error", it)
-                        }
-                    }
-                }
-
-                launch {
-                    viewModel.randomSlok.collectLatest {
-                        it?.slok?.let {  slok ->
-                            binding.verse.text = slok
-                            binding.shimmerLayout.stopShimmer()
-                            binding.shimmerLayout.visibility = View.GONE
-                            binding.isDataAvailable = true
-                        }
-                    }
-                }
-
-                launch {
-                    viewModel.chapters.collectLatest { chapters ->
-                        adapter.submitList(chapters)
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun observers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            launch {
+                viewModel.errorMessage.collectLatest {
+                    if (it.isNotEmpty()) {
+                        Log.e("error", it)
                     }
                 }
             }
+
+            launch {
+                viewModel.randomSlokDetail.collectLatest {
+                    it?.let {
+                        val userLanguage = preferenceHelper.getString("lan", "en")
+                        it.lastReadSlokHindi =
+                            preferenceHelper.getString(AppConstants.lastReadTranslationHindi, "")
+                        it.lastReadSlokEnglish =
+                            preferenceHelper.getString(AppConstants.lastReadTranslationEnglish, "")
+                        if (userLanguage == "en") {
+                            it.userSelectedLanguageSlok = it.slokEnglish
+                            it.lastReadUserLanguage = it.lastReadSlokEnglish
+                        } else {
+                            it.userSelectedLanguageSlok = it.slokHindi
+                            it.lastReadUserLanguage = it.lastReadSlokHindi
+                        }
+                        slokDetailLocal = it
+                        binding.slokData = slokDetailLocal
+                        binding.shimmerLayout.stopShimmer()
+                        binding.shimmerLayout.visibility = View.GONE
+                        binding.isDataAvailable = true
+                    }
+                }
+            }
+
+            launch {
+                viewModel.chapters.collectLatest { chapters ->
+                    adapter.submitList(chapters)
+                }
+            }
         }
+    }
 
     private fun setupUI() {
         binding.shimmerLayout.visibility = View.VISIBLE
         binding.isDataAvailable = false
         preferenceHelper = PreferenceHelper(requireContext())
-        preferenceHelper.putString("lan","en")
+        setupMenuBar()
 
         getLastRead()
 
         val (ch, slok) = calculateRandomSlokNumber()
         viewModel.getRandomSlok(ch, slok)
         setupRecyclerView()
+    }
+
+    private fun setupMenuBar() {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.clear()
+                menuInflater.inflate(R.menu.chapter_detial_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.hindi -> {
+                        preferenceHelper.putString("lan", "hi")
+                        changeLanguage()
+                    }
+
+                    R.id.english -> {
+                        preferenceHelper.putString("lan", "en")
+                        changeLanguage()
+                    }
+                }
+                return true
+            }
+        })
+    }
+
+    private fun changeLanguage() {
+        if (preferenceHelper.getString("lan", "en") == "en") {
+            slokDetailLocal.userSelectedLanguageSlok = slokDetailLocal.slokEnglish
+            slokDetailLocal.lastReadUserLanguage = slokDetailLocal.lastReadSlokEnglish
+        } else {
+            slokDetailLocal.userSelectedLanguageSlok = slokDetailLocal.slokHindi
+            slokDetailLocal.lastReadUserLanguage = slokDetailLocal.lastReadSlokHindi
+        }
+        binding.slokData = slokDetailLocal
+        binding.executePendingBindings()
     }
 
     override fun onPause() {
@@ -97,7 +154,8 @@ class FragmentHomeScreen : Fragment() {
         val isLastReadAvailable = preferenceHelper.getBoolean("isLastRead", false)
         if (isLastReadAvailable) {
             binding.isLastReadAvailable = true
-            binding.tvLastReadVerse.text = preferenceHelper.getString(AppConstants.lastReadTranslationEnglish, "")
+            binding.tvLastReadVerse.text =
+                preferenceHelper.getString(AppConstants.lastReadTranslationEnglish, "")
         } else {
             binding.isLastReadAvailable = false
         }
@@ -124,18 +182,21 @@ class FragmentHomeScreen : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        Log.e("lan", preferenceHelper.getString("lan", "NA"))
         getLastRead()
     }
 
     private fun navigateToChapterDetail(item: Int?) {
         item?.let { chapterNumber ->
-            val destination = FragmentHomeScreenDirections.actionHomeFragmentToChapterDetail(chapterNumber.toString())
+            val destination =
+                FragmentHomeScreenDirections.actionHomeFragmentToChapterDetail(chapterNumber.toString())
             findNavController().navigate(destination)
         }
     }
 
     private fun calculateRandomSlokNumber(): Pair<Int, Int> {
-        val slokCount = listOf(47, 72, 43, 42, 29, 47, 30, 28, 34, 42, 55, 20, 35, 27, 20, 24, 28, 78)
+        val slokCount =
+            listOf(47, 72, 43, 42, 29, 47, 30, 28, 34, 42, 55, 20, 35, 27, 20, 24, 28, 78)
         val chapter = (floor(Math.random() * 17) + 1).toInt()
         val slok = (floor(Math.random() * slokCount[(chapter - 1)]) + 1).toInt()
         return chapter to slok

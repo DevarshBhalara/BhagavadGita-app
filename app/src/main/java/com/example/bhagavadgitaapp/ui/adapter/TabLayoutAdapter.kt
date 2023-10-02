@@ -15,10 +15,4 @@ class TabLayoutAdapter(private val fragmentManager: FragmentManager, fa: Fragmen
     override fun createFragment(position: Int): Fragment {
         return FragmentViewAllVerse(chapter, position + 1)
     }
-
-    fun removeFragment(position: Int) {
-        val transaction = fragmentManager.beginTransaction()
-        transaction.remove(FragmentViewAllVerse(chapter, position))
-        transaction.commitNow()
-    }
 }
