@@ -1,6 +1,7 @@
 package com.example.bhagavadgitaapp.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -103,6 +104,11 @@ class FragmentViewAllVerseTabLayout : Fragment() {
             }
 
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("lanT", preferenceHelper.getString("lan", "NA"))
     }
 
     private fun setLastRead(lastRead: LastRead ) {

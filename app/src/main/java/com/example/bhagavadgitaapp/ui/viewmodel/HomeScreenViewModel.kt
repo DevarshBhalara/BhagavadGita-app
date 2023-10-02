@@ -1,9 +1,11 @@
 package com.example.bhagavadgitaapp.ui.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bhagavadgitaapp.data.local.DisplayRandomSlok
+import com.example.bhagavadgitaapp.data.local.HomeScreenLocal
 import com.example.bhagavadgitaapp.data.remote.Chapter
 import com.example.bhagavadgitaapp.ui.repository.HomeRepository
 import com.example.bhagavadgitaapp.utils.Resource
@@ -16,11 +18,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-  private val homeRepository: HomeRepository
+  private val homeRepository: HomeRepository,
 ) : ViewModel() {
 
-    private val _randomSlok = MutableStateFlow<DisplayRandomSlok?>(null)
-    var randomSlok = _randomSlok.asStateFlow()
+    private val _randomSlokDetail = MutableStateFlow<HomeScreenLocal?>(null)
+    var randomSlokDetail = _randomSlokDetail.asStateFlow()
 
     private val _chapters = MutableStateFlow<ArrayList<Chapter>>(arrayListOf())
     var chapters = _chapters.asStateFlow()
@@ -31,9 +33,11 @@ class HomeScreenViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
 
+
     init {
         getChapter()
     }
+
 
     private fun getChapter() {
         viewModelScope.launch {
@@ -71,8 +75,14 @@ class HomeScreenViewModel @Inject constructor(
                         _isLoading.emit(false)
                         resource.data?.let { slok ->
                             Log.d("response", slok.slok ?: "No")
-                            // TODO: Handle null Values
-                            _randomSlok.emit(slok.siva?.et?.let { DisplayRandomSlok(it, slok.chapter, slok.verse) })
+                            _randomSlokDetail.emit(
+                                HomeScreenLocal(
+                                    slok.tej?.ht,
+                                    slok.siva?.et,
+                                    slok.slok,
+                                )
+                            )
+//                            _randomSlok.emit(slok.siva?.et?.let { DisplayRandomSlok(it, slok.chapter, slok.verse) })
                         }
                     }
 

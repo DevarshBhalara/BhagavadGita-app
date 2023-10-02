@@ -13,6 +13,10 @@
             type="boolean" />
 
         <variable
+            name="slokData"
+            type="com.example.bhagavadgitaapp.data.local.HomeScreenLocal" />
+
+        <variable
             name="viewModel"
             type="com.example.bhagavadgitaapp.ui.viewmodel.HomeScreenViewModel" />
     </data>
@@ -96,7 +100,8 @@
                         android:paddingBottom="@dimen/_16dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/dummy_verse" />
+                        android:text="@{ slokData.userSelectedLanguageSlok }"
+                        tools:text="@string/dummy_verse" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -119,8 +124,9 @@
                 android:id="@+id/tvLastReadVerse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{ isLastReadAvailable ? View.VISIBLE : View.GONE }"
-                android:text="@string/dummy_verse"
+                android:visibility="@{ (isLastReadAvailable  &amp;&amp;  isDataAvailable) ? View.VISIBLE : View.GONE }"
+                tools:text="@string/dummy_verse"
+                android:text="@{ slokData.lastReadUserLanguage }"
                 app:layout_constraintTop_toBottomOf="@id/tvLastRead"
                 android:layout_marginTop="@dimen/_16dp"/>
 
@@ -153,6 +159,7 @@
                 android:id="@+id/btnFliter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="@{ isDataAvailable ? View.VISIBLE : View.GONE }"
                 android:backgroundTint="@android:color/transparent"
                 android:src="@drawable/baseline_sort_24"
                 app:layout_constraintEnd_toEndOf="parent"
