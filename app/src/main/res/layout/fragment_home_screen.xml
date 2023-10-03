@@ -124,6 +124,7 @@
                 android:id="@+id/tvLastReadVerse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/likeBlack"
                 android:visibility="@{ (isLastReadAvailable  &amp;&amp;  isDataAvailable) ? View.VISIBLE : View.GONE }"
                 tools:text="@string/dummy_verse"
                 android:text="@{ slokData.lastReadUserLanguage }"

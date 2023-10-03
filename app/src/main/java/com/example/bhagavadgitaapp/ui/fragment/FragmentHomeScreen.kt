@@ -127,7 +127,7 @@ class FragmentHomeScreen : Fragment() {
                         changeLanguage()
                     }
                 }
-                return true
+                return false
             }
         })
     }

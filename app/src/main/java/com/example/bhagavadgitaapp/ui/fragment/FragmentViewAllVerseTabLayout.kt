@@ -4,14 +4,23 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.local.LastRead
 import com.example.bhagavadgitaapp.databinding.FragmentViewAllVerseTabLayoutBinding
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
+import com.example.bhagavadgitaapp.services.room.SavedSlok
 import com.example.bhagavadgitaapp.ui.adapter.TabLayoutAdapter
 import com.example.bhagavadgitaapp.ui.viewmodel.SlokViewModel
 import com.example.bhagavadgitaapp.utils.AppConstants
@@ -29,6 +38,9 @@ class FragmentViewAllVerseTabLayout : Fragment() {
     private lateinit var preferenceHelper: PreferenceHelper
     private val viewModel: SlokViewModel by  viewModels()
     private lateinit var lastRead: LastRead
+    private var isSaved = false // whether current verse is Saved by user or not
+    private var menuLocal: Menu? = null // to later change icon of menu item
+    var currentSavedSlok: SavedSlok? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +69,46 @@ class FragmentViewAllVerseTabLayout : Fragment() {
                         )
                         setLastRead(lastRead)
                     }
+                }
+            }
 
+            launch {
+                viewModel.isSaved.observe(viewLifecycleOwner) {
+                    if (isSaved != it) {
+                        isSaved = it
+                        setupMenuBar()
+                    }
+                }
+            }
+
+            launch {
+                viewModel.savedSlokObj.observe(viewLifecycleOwner) { savedSlok ->
+                    savedSlok?.let {
+                        currentSavedSlok = it
+                    }
+                }
+            }
+
+            launch {
+                viewModel.isSavedSuccess.observe(viewLifecycleOwner) {
+                    if (isSaved != it) {
+                        isSaved = it
+                        menuLocal?.let { menu ->
+                            changeMenuIcon(menu)
+                        }
+                    }
+                }
+            }
+
+            launch {
+                viewModel.isRemovedSuccess.observe(viewLifecycleOwner) { isRemoved ->
+                    if (isRemoved) {
+                        Toast.makeText(requireContext(), "Removed from Like", Toast.LENGTH_SHORT).show()
+                        isSaved = !isRemoved
+                        menuLocal?.let {
+                            changeMenuIcon(it)
+                        }
+                    }
                 }
             }
         }
@@ -71,7 +122,76 @@ class FragmentViewAllVerseTabLayout : Fragment() {
         setTabLayout(chapter, verseCount)
     }
 
+    private fun setupMenuBar() {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.clear()
+                menuInflater.inflate(R.menu.menu_slok, menu)
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                menuLocal = menu
+                changeMenuIcon(menu)
+                super.onPrepareMenu(menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when(menuItem.itemId) {
+                    R.id.like -> {
+                        Log.e("isSaved", isSaved.toString())
+                        if(!isSaved) {
+                            viewModel.saveSlok(
+                                SavedSlok(
+                                    chapterNumber = preferenceHelper.getString(
+                                        AppConstants.lastReadChapter,
+                                        "1"
+                                    ),
+                                    verseNumber = preferenceHelper.getString(
+                                        AppConstants.lastReadVerseNum,
+                                        "1"
+                                    ),
+                                    slok = preferenceHelper.getString(
+                                        AppConstants.lastReadTranslationEnglish,
+                                        ""
+                                    ),
+                                    hindiTranslation = preferenceHelper.getString(
+                                        AppConstants.lastReadTranslationHindi,
+                                        ""
+                                    ),
+                                    englishTranslation = preferenceHelper.getString(
+                                        AppConstants.lastReadTranslationEnglish,
+                                        ""
+                                    ),
+                                )
+                            )
+                        } else {
+                            currentSavedSlok?.let {
+                                viewModel.removeSlok(it)
+                            }
+                        }
+                    }
+                }
+                return true
+            }
+        })
+    }
+
+    private fun changeMenuIcon(menu: Menu) {
+        val item = menu.findItem(R.id.like)
+        item?.let {
+            if (isSaved) {
+                item.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_heart_active_24)
+            } else {
+                item.icon =  AppCompatResources.getDrawable(requireContext(),R.drawable.ic_heart_24)
+            }
+        }
+    }
+
     private fun setTabLayout(chapter: Int, verseCount: Int) {
+
+        viewModel.isSlokSaved(chapter.toString(), "1")
+        setupMenuBar()
+
         for (i in 0..verseCount) {
             binding.tabLayout.addTab(binding.tabLayout.newTab())
         }
@@ -92,6 +212,7 @@ class FragmentViewAllVerseTabLayout : Fragment() {
                 val position = tab?.position ?: 0
                 if (position > 0) {
                     viewModel.getSlok(chapter, position + 1)
+                    viewModel.isSlokSaved(chapter.toString(), (position + 1).toString())
                 }
             }
 
@@ -104,11 +225,6 @@ class FragmentViewAllVerseTabLayout : Fragment() {
             }
 
         })
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.e("lanT", preferenceHelper.getString("lan", "NA"))
     }
 
     private fun setLastRead(lastRead: LastRead ) {

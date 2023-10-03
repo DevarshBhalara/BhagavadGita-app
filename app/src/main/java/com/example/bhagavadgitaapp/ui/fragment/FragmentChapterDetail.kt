@@ -138,7 +138,7 @@ class FragmentChapterDetail : Fragment() {
                         changeLanguage()
                     }
                 }
-                return true
+                return false
             }
         })
     }

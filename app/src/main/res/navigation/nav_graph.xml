@@ -54,5 +54,12 @@
 
     </fragment>
 
+    <fragment
+        android:id="@+id/liked"
+        android:name="com.example.bhagavadgitaapp.ui.fragment.FragmentLikedSlok"
+        tools:layout="@layout/fragment_liked_slok"
+        />
+
+
 
 </navigation>

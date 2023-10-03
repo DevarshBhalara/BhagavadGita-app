@@ -1,11 +1,14 @@
 package com.example.bhagavadgitaapp.ui.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bhagavadgitaapp.data.local.Authors
 import com.example.bhagavadgitaapp.data.local.SlokLocal
 import com.example.bhagavadgitaapp.data.local.TranslationOrCommentary
 import com.example.bhagavadgitaapp.data.remote.Slok
+import com.example.bhagavadgitaapp.services.room.SavedSlok
 import com.example.bhagavadgitaapp.ui.repository.SlokRepository
 import com.example.bhagavadgitaapp.utils.AppConstants
 import com.example.bhagavadgitaapp.utils.Resource
@@ -24,6 +27,19 @@ class SlokViewModel @Inject constructor(
 
     private val _slok = MutableStateFlow<SlokLocal?>(null)
     var slok = _slok.asStateFlow()
+
+    private val _isSaved = MutableLiveData<Boolean>(false)
+    var isSaved = _isSaved
+
+    private val _savedSlokObj = MutableLiveData<SavedSlok?>(null)
+    var savedSlokObj = _savedSlokObj
+
+    private val _isSavedSuccess = MutableLiveData<Boolean>(false)
+    var isSavedSuccess = _isSavedSuccess
+
+    private val _isRemoveSuccess = MutableLiveData<Boolean>(false)
+    var isRemovedSuccess = _isRemoveSuccess
+
     private var job: Job? = null
 
     fun getSlok(ch: Int, sl: Int) {
@@ -51,6 +67,33 @@ class SlokViewModel @Inject constructor(
 
                     }
                 }
+            }
+        }
+    }
+
+    fun saveSlok(savedSlok: SavedSlok) {
+        viewModelScope.launch {
+            slokRepository.saveSlok(savedSlok).collectLatest {
+                _isSavedSuccess.postValue(it)
+            }
+        }
+    }
+
+    fun removeSlok(savedSlok: SavedSlok) {
+        viewModelScope.launch {
+            slokRepository.removeSlok(savedSlok).collectLatest {
+                _isRemoveSuccess.postValue(it)
+            }
+        }
+    }
+
+    fun isSlokSaved(chapter: String, verse: String) {
+        viewModelScope.launch {
+            slokRepository.isSavedSlok(chapter, verse).collectLatest {
+                it?.let { savedSlok ->
+                    _isSaved.postValue(true)
+                    _savedSlokObj.postValue(savedSlok)
+                } ?: _isSaved.postValue(false)
             }
         }
     }

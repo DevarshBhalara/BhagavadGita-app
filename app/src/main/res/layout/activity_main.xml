@@ -30,9 +30,28 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:defaultNavHost="true"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottomNav"
             app:layout_constraintTop_toBottomOf="@id/appbarLayout"
             app:navGraph="@navigation/nav_graph" />
 
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
+            android:background="@color/primaryColor"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:layout_constraintTop_toBottomOf="@id/hostFragmentContainer"
+            app:elevation="@dimen/_6dp"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="@color/white"
+            app:itemRippleColor="@color/lightPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:menu="@menu/menu_bottom_nav" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </layout>
