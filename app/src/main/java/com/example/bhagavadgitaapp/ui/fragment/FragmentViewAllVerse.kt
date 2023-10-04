@@ -2,18 +2,27 @@ package com.example.bhagavadgitaapp.ui.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.local.Authors
 import com.example.bhagavadgitaapp.databinding.FragmentFragemntViewAllVerseBinding
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
 import com.example.bhagavadgitaapp.listners.ItemClickListener
+import com.example.bhagavadgitaapp.services.room.SavedSlok
 import com.example.bhagavadgitaapp.ui.adapter.RVVerseTranslationAdapter
 import com.example.bhagavadgitaapp.ui.viewmodel.SlokViewModel
+import com.example.bhagavadgitaapp.utils.AppConstants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -25,6 +34,8 @@ class FragmentViewAllVerse(private val chapter: Int, private val verse: Int) : F
     private val viewModel: SlokViewModel by viewModels()
     private val adapter = RVVerseTranslationAdapter()
     private lateinit var preferenceHelper: PreferenceHelper
+    private var isSaved = false
+    private var isMenuBarSetup = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +50,7 @@ class FragmentViewAllVerse(private val chapter: Int, private val verse: Int) : F
         setupUI()
         bindObservables()
     }
+
 
     private fun bindObservables() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -59,7 +71,6 @@ class FragmentViewAllVerse(private val chapter: Int, private val verse: Int) : F
         super.onResume()
         viewModel.getSlok(chapter, verse)
     }
-
 
     private fun setupUI() {
         preferenceHelper = PreferenceHelper(requireContext())

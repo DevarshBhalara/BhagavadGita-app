@@ -1,8 +1,13 @@
 package com.example.bhagavadgitaapp.di
 
+import androidx.room.Room
+import com.example.bhagavadgitaapp.MyApp
 import com.example.bhagavadgitaapp.ui.repository.HomeRepository
 import com.example.bhagavadgitaapp.data.services.ApiService
+import com.example.bhagavadgitaapp.services.room.SavedSlokDao
+import com.example.bhagavadgitaapp.services.room.SlokDatabase
 import com.example.bhagavadgitaapp.ui.repository.ChapterDetailRepository
+import com.example.bhagavadgitaapp.ui.repository.SavedSlokRepository
 import com.example.bhagavadgitaapp.ui.repository.SlokRepository
 import com.example.bhagavadgitaapp.utils.AppConstants
 import com.google.gson.Gson
@@ -18,6 +23,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class ApiModule {
+
+    private val database = Room.databaseBuilder(MyApp.getAppContext(), SlokDatabase::class.java, AppConstants.database).build()
 
     @Provides
     @Singleton
@@ -49,6 +56,17 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideSlokRepository(apiService: ApiService): SlokRepository =
-        SlokRepository(apiService)
+    fun provideSlokRepository(apiService: ApiService, slokDao: SavedSlokDao): SlokRepository =
+        SlokRepository(apiService, slokDao)
+
+    @Provides
+    @Singleton
+    fun provideSavedSlokDaoService(): SavedSlokDao =
+        database.savedSlok()
+
+    @Provides
+    @Singleton
+    fun provideSavedSlokRepository(slokDao: SavedSlokDao): SavedSlokRepository =
+        SavedSlokRepository(slokDao)
+
 }

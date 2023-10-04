@@ -16,4 +16,7 @@
     <string name="translation">Translation</string>
     <string name="transliteration">Transliteration</string>
     <string name="translation_by_different_authors">Translation by Different Authors</string>
+    <string name="home">Home</string>
+    <string name="liked">Liked</string>
+    <string name="like">Like</string>
 </resources>
