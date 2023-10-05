@@ -34,8 +34,6 @@ class FragmentViewAllVerse(private val chapter: Int, private val verse: Int) : F
     private val viewModel: SlokViewModel by viewModels()
     private val adapter = RVVerseTranslationAdapter()
     private lateinit var preferenceHelper: PreferenceHelper
-    private var isSaved = false
-    private var isMenuBarSetup = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

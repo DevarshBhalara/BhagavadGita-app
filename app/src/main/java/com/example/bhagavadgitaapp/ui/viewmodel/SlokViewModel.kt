@@ -34,6 +34,9 @@ class SlokViewModel @Inject constructor(
     private val _savedSlokObj = MutableLiveData<SavedSlok?>(null)
     var savedSlokObj = _savedSlokObj
 
+    private val _verseImage = MutableStateFlow<String>("")
+    var verseImage = _verseImage.asStateFlow()
+
     private val _isSavedSuccess = MutableLiveData<Boolean>(false)
     var isSavedSuccess = _isSavedSuccess
 
@@ -63,6 +66,27 @@ class SlokViewModel @Inject constructor(
                             ))
                         }
                     }
+                    is Resource.Error -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    fun getVerseImage(ch: String, sl: String) {
+        viewModelScope.launch {
+            slokRepository.getVerseImage(ch, sl).collectLatest { resource ->
+                when(resource) {
+                    is Resource.Loading -> {
+
+                    }
+                    is Resource.Success -> {
+                        resource.data?.let { data ->
+                            Log.e("svg", data)
+                        }
+                    }
+
                     is Resource.Error -> {
 
                     }

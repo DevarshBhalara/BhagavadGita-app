@@ -52,6 +52,10 @@
             android:name="isContinueReading"
             app:argType="boolean" />
 
+        <action
+            android:id="@+id/action_verse_to_webViewVerse"
+            app:destination="@id/webViewVerse" />
+
     </fragment>
 
     <fragment
@@ -60,6 +64,18 @@
         tools:layout="@layout/fragment_liked_slok"
         />
 
+    <fragment
+        android:id="@+id/webViewVerse"
+        android:name="com.example.bhagavadgitaapp.ui.fragment.FragmentViewVerseWebView"
+        tools:layout="@layout/fragment_view_verse_web_view"
+        >
+
+        <argument
+            android:name="url"
+            app:argType="string"
+            />
+
+    </fragment>
 
 
 </navigation>

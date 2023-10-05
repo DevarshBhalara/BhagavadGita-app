@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -25,7 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FragmentChapterDetail : Fragment() {
+class FragmentChapterDetail : Fragment(), MenuProvider {
 
     private lateinit var binding: FragmentChapterDetailBinding
     private val viewModel: ChapterDetailViewModel by viewModels()
@@ -121,26 +122,7 @@ class FragmentChapterDetail : Fragment() {
     }
 
     private fun setupMenuBar() {
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menu.clear()
-                menuInflater.inflate(R.menu.chapter_detial_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when(menuItem.itemId) {
-                    R.id.hindi -> {
-                        preferenceHelper.putString("lan", "hi")
-                        changeLanguage()
-                    }
-                    R.id.english -> {
-                        preferenceHelper.putString("lan", "en")
-                        changeLanguage()
-                    }
-                }
-                return false
-            }
-        })
+        (requireActivity() as MenuHost).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun changeLanguage() {
@@ -156,5 +138,24 @@ class FragmentChapterDetail : Fragment() {
         }
         binding.chapter = chapterLocal
         binding.executePendingBindings()
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menu.clear()
+        menuInflater.inflate(R.menu.chapter_detial_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when(menuItem.itemId) {
+            R.id.hindi -> {
+                preferenceHelper.putString("lan", "hi")
+                changeLanguage()
+            }
+            R.id.english -> {
+                preferenceHelper.putString("lan", "en")
+                changeLanguage()
+            }
+        }
+        return false
     }
 }

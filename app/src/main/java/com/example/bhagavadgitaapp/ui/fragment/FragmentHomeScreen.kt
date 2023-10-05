@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.bhagavadgitaapp.R
@@ -30,7 +31,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.floor
 
 @AndroidEntryPoint
-class FragmentHomeScreen : Fragment() {
+class FragmentHomeScreen : Fragment(), MenuProvider {
 
     private lateinit var binding: FragmentHomeScreenBinding
     private val viewModel: HomeScreenViewModel by viewModels()
@@ -100,36 +101,14 @@ class FragmentHomeScreen : Fragment() {
         binding.isDataAvailable = false
         preferenceHelper = PreferenceHelper(requireContext())
         setupMenuBar()
-
         getLastRead()
-
         val (ch, slok) = calculateRandomSlokNumber()
         viewModel.getRandomSlok(ch, slok)
         setupRecyclerView()
     }
 
     private fun setupMenuBar() {
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menu.clear()
-                menuInflater.inflate(R.menu.chapter_detial_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when (menuItem.itemId) {
-                    R.id.hindi -> {
-                        preferenceHelper.putString("lan", "hi")
-                        changeLanguage()
-                    }
-
-                    R.id.english -> {
-                        preferenceHelper.putString("lan", "en")
-                        changeLanguage()
-                    }
-                }
-                return false
-            }
-        })
+        (requireActivity() as MenuHost).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun changeLanguage() {
@@ -200,6 +179,26 @@ class FragmentHomeScreen : Fragment() {
         val chapter = (floor(Math.random() * 17) + 1).toInt()
         val slok = (floor(Math.random() * slokCount[(chapter - 1)]) + 1).toInt()
         return chapter to slok
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menu.clear()
+        menuInflater.inflate(R.menu.chapter_detial_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.hindi -> {
+                preferenceHelper.putString("lan", "hi")
+                changeLanguage()
+            }
+
+            R.id.english -> {
+                preferenceHelper.putString("lan", "en")
+                changeLanguage()
+            }
+        }
+        return false
     }
 
 }
