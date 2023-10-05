@@ -17,4 +17,7 @@ interface ApiService {
     @GET("chapter/{ch}")
     suspend fun getParticularChapter(@Path("ch") ch: String): Response<ChapterDetail>
 
+    @GET("slok/{ch}/{sl}/gita.svg")
+    suspend fun getVerseImage(@Path("ch") ch: String, @Path("sl") slok: String): Response<String>
+
 }

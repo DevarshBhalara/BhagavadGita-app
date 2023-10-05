@@ -27,6 +27,19 @@ class SlokRepository(private val apiService: ApiService, private val slokDao: Sa
 
     }.flowOn(Dispatchers.IO)
 
+    suspend fun getVerseImage(ch: String, slok: String) = flow<Resource<String>> {
+        emit(Resource.Loading())
+        try {
+            apiService.getVerseImage(ch, slok).let { response ->
+                val resource = handleResponse(response)
+                emit(resource)
+            }
+        } catch (e: Exception) {
+            emit(Resource.Error(message = e.localizedMessage ?: "Error"))
+            e.localizedMessage?.let { Log.d("response", it) }
+        }
+    }.flowOn(Dispatchers.IO)
+
     suspend fun isSavedSlok(chapter: String, verse: String) = flow<SavedSlok?> {
         val sloks = slokDao.isSlokSaved(chapter, verse)
         emit(sloks.firstOrNull())
