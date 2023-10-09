@@ -20,11 +20,13 @@ import androidx.navigation.fragment.navArgs
 import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.local.LastRead
 import com.example.bhagavadgitaapp.databinding.FragmentViewAllVerseTabLayoutBinding
+import com.example.bhagavadgitaapp.extension.navigate
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
 import com.example.bhagavadgitaapp.services.room.SavedSlok
 import com.example.bhagavadgitaapp.ui.adapter.TabLayoutAdapter
 import com.example.bhagavadgitaapp.ui.viewmodel.SlokViewModel
 import com.example.bhagavadgitaapp.utils.AppConstants
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +43,7 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
     private lateinit var lastRead: LastRead
     private var isSaved = false // whether current verse is Saved by user or not
     private var menuLocal: Menu? = null // to later change icon of menu item
-    var currentSavedSlok: SavedSlok? = null
+    private var currentSavedSlok: SavedSlok? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,7 +98,9 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
                         isSaved = it
                         menuLocal?.let { menu ->
                             changeMenuIcon(menu)
+                            Snackbar.make(binding.root, "Saved Successfully!", Snackbar.LENGTH_SHORT).show()
                         }
+                        viewModel.isSlokSaved(preferenceHelper.getString(AppConstants.lastReadChapter, "0"), (binding.tabLayout.selectedTabPosition + 1).toString())
                     }
                 }
             }
@@ -104,11 +108,10 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
             launch {
                 viewModel.isRemovedSuccess.observe(viewLifecycleOwner) { isRemoved ->
                     if (isRemoved) {
-                        Toast.makeText(requireContext(), "Removed from Like", Toast.LENGTH_SHORT)
-                            .show()
                         isSaved = !isRemoved
                         menuLocal?.let {
                             changeMenuIcon(it)
+                            Snackbar.make(binding.root, "Removed Successfully!", Snackbar.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -124,16 +127,73 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
         setTabLayout(chapter, verseCount)
     }
 
+    /** Menu Bar */
     private fun setupMenuBar() {
-        (requireActivity()).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        (requireActivity()).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.STARTED)
     }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menu.clear()
+        menuInflater.inflate(R.menu.menu_slok, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.like -> {
+                Log.e("click", "Called $isSaved ${binding.tabLayout.selectedTabPosition}")
+                if (!isSaved) {
+                    viewModel.saveSlok(
+                        SavedSlok(
+                            chapterNumber = preferenceHelper.getString(
+                                AppConstants.lastReadChapter,
+                                "1"
+                            ),
+                            verseNumber = preferenceHelper.getString(
+                                AppConstants.lastReadVerseNum,
+                                "1"
+                            ),
+                            slok = preferenceHelper.getString(
+                                AppConstants.lastReadTranslationEnglish,
+                                ""
+                            ),
+                            hindiTranslation = preferenceHelper.getString(
+                                AppConstants.lastReadTranslationHindi,
+                                ""
+                            ),
+                            englishTranslation = preferenceHelper.getString(
+                                AppConstants.lastReadTranslationEnglish,
+                                ""
+                            ),
+                        )
+                    )
+                } else {
+                    currentSavedSlok?.let {
+                        viewModel.removeSlok(it)
+                    }
+                }
+            }
+
+            R.id.download -> {
+                goToWebViewPage()
+            }
+        }
+        return false
+    }
+
+    override fun onPrepareMenu(menu: Menu) {
+        menuLocal = menu
+        changeMenuIcon(menu)
+        super.onPrepareMenu(menu)
+    }
+
 
     private fun goToWebViewPage() {
         val chapter = preferenceHelper.getString(AppConstants.lastReadChapter, "1")
         val verse = preferenceHelper.getString(AppConstants.lastReadVerseNum, "1")
+
         val destination =
             FragmentViewAllVerseTabLayoutDirections.actionVerseToWebViewVerse(AppConstants.BASE_URL + "slok/$chapter/$verse/gita.svg")
-        findNavController().navigate(destination)
+        navigate(destination)
     }
 
     private fun changeMenuIcon(menu: Menu) {
@@ -199,6 +259,7 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
     }
 
     private fun setLastRead(lastRead: LastRead) {
+        Log.e("call", preferenceHelper.getString(AppConstants.lastReadVerseNum, "0"))
         preferenceHelper.putBoolean(AppConstants.isLastRead, true)
         preferenceHelper.putString(AppConstants.lastReadChapter, lastRead.chapter)
         preferenceHelper.putString(AppConstants.lastReadVerseNum, lastRead.verse)
@@ -207,59 +268,5 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
             AppConstants.lastReadTranslationEnglish,
             lastRead.translationEnglish
         )
-    }
-
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menu.clear()
-        menuInflater.inflate(R.menu.menu_slok, menu)
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.like -> {
-                Log.e("isSaved", isSaved.toString())
-                if (!isSaved) {
-                    viewModel.saveSlok(
-                        SavedSlok(
-                            chapterNumber = preferenceHelper.getString(
-                                AppConstants.lastReadChapter,
-                                "1"
-                            ),
-                            verseNumber = preferenceHelper.getString(
-                                AppConstants.lastReadVerseNum,
-                                "1"
-                            ),
-                            slok = preferenceHelper.getString(
-                                AppConstants.lastReadTranslationEnglish,
-                                ""
-                            ),
-                            hindiTranslation = preferenceHelper.getString(
-                                AppConstants.lastReadTranslationHindi,
-                                ""
-                            ),
-                            englishTranslation = preferenceHelper.getString(
-                                AppConstants.lastReadTranslationEnglish,
-                                ""
-                            ),
-                        )
-                    )
-                } else {
-                    currentSavedSlok?.let {
-                        viewModel.removeSlok(it)
-                    }
-                }
-            }
-
-            R.id.download -> {
-                goToWebViewPage()
-            }
-        }
-        return false
-    }
-
-    override fun onPrepareMenu(menu: Menu) {
-        menuLocal = menu
-        changeMenuIcon(menu)
-        super.onPrepareMenu(menu)
     }
 }
