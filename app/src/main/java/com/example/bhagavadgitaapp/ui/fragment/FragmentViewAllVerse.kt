@@ -5,21 +5,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.local.Authors
+import com.example.bhagavadgitaapp.data.local.LastRead
 import com.example.bhagavadgitaapp.databinding.FragmentFragemntViewAllVerseBinding
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
 import com.example.bhagavadgitaapp.listners.ItemClickListener
-import com.example.bhagavadgitaapp.services.room.SavedSlok
 import com.example.bhagavadgitaapp.ui.adapter.RVVerseTranslationAdapter
 import com.example.bhagavadgitaapp.ui.viewmodel.SlokViewModel
 import com.example.bhagavadgitaapp.utils.AppConstants
@@ -34,6 +28,7 @@ class FragmentViewAllVerse(private val chapter: Int, private val verse: Int) : F
     private val viewModel: SlokViewModel by viewModels()
     private val adapter = RVVerseTranslationAdapter()
     private lateinit var preferenceHelper: PreferenceHelper
+    private var lastRead: LastRead? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +54,14 @@ class FragmentViewAllVerse(private val chapter: Int, private val verse: Int) : F
                         adapter.submitList(it.authors)
                         binding.shimmerLayout.stopShimmer()
                         binding.shimmerLayout.visibility = View.GONE
+
+                        lastRead = LastRead(
+                            chapter.toString(),
+                            it.verse.toString(),
+                            it.authors[0].hindiTranslation.toString(),
+                            it.authors[1].englishTranslation.toString()
+                        )
+                        setLastRead(lastRead!!)
                     }
                 }
             }
@@ -68,6 +71,21 @@ class FragmentViewAllVerse(private val chapter: Int, private val verse: Int) : F
     override fun onResume() {
         super.onResume()
         viewModel.getSlok(chapter, verse)
+        lastRead?.let {
+            setLastRead(it)
+        }
+    }
+
+    private fun setLastRead(lastRead: LastRead) {
+        preferenceHelper.putBoolean(AppConstants.isLastRead, true)
+        preferenceHelper.putString(AppConstants.lastReadChapter, lastRead.chapter)
+        preferenceHelper.putString(AppConstants.lastReadVerseNum, lastRead.verse)
+        preferenceHelper.putString(AppConstants.lastReadTranslationHindi, lastRead.translationHindi)
+        preferenceHelper.putString(
+            AppConstants.lastReadTranslationEnglish,
+            lastRead.translationEnglish
+        )
+        Log.e("last", lastRead.toString())
     }
 
     private fun setupUI() {

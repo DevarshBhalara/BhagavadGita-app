@@ -74,29 +74,9 @@ class SlokViewModel @Inject constructor(
         }
     }
 
-    fun getVerseImage(ch: String, sl: String) {
-        viewModelScope.launch {
-            slokRepository.getVerseImage(ch, sl).collectLatest { resource ->
-                when(resource) {
-                    is Resource.Loading -> {
-
-                    }
-                    is Resource.Success -> {
-                        resource.data?.let { data ->
-                            Log.e("svg", data)
-                        }
-                    }
-
-                    is Resource.Error -> {
-
-                    }
-                }
-            }
-        }
-    }
-
     fun saveSlok(savedSlok: SavedSlok) {
-        viewModelScope.launch {
+        job?.cancel()
+        job = viewModelScope.launch {
             slokRepository.saveSlok(savedSlok).collectLatest {
                 _isSavedSuccess.postValue(it)
             }
@@ -104,7 +84,8 @@ class SlokViewModel @Inject constructor(
     }
 
     fun removeSlok(savedSlok: SavedSlok) {
-        viewModelScope.launch {
+        job?.cancel()
+        job = viewModelScope.launch {
             slokRepository.removeSlok(savedSlok).collectLatest {
                 _isRemoveSuccess.postValue(it)
             }
