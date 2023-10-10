@@ -23,7 +23,7 @@ class SavedVerseViewModel @Inject constructor(
         getAllSavedVerse()
     }
 
-    private fun getAllSavedVerse() {
+    fun getAllSavedVerse() {
         viewModelScope.launch {
             savedSlokRepository.getAllSavedVerse().collectLatest { savedVerse ->
                 _savedVerse.emit(savedVerse)

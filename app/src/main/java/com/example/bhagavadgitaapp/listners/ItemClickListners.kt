@@ -9,4 +9,6 @@ interface ItemClickListener<T> {
      * @param position Adapter position on which clicked
      */
     fun onClick(item: T, position: Int)
+    fun onLikeClick(item: T, position: Int)
+
 }
