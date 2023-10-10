@@ -15,7 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.local.LastRead
@@ -32,6 +31,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
 @AndroidEntryPoint
 class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
@@ -94,7 +94,7 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
 
             launch {
                 viewModel.isSavedSuccess.observe(viewLifecycleOwner) {
-                    if (isSaved != it) {
+                    if (it) {
                         isSaved = it
                         menuLocal?.let { menu ->
                             changeMenuIcon(menu)
@@ -191,9 +191,15 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
         val chapter = preferenceHelper.getString(AppConstants.lastReadChapter, "1")
         val verse = preferenceHelper.getString(AppConstants.lastReadVerseNum, "1")
 
-        val destination =
-            FragmentViewAllVerseTabLayoutDirections.actionVerseToWebViewVerse(AppConstants.BASE_URL + "slok/$chapter/$verse/gita.svg")
-        navigate(destination)
+        try {
+            val destination =
+                FragmentViewAllVerseTabLayoutDirections.actionVerseToWebViewVerse(AppConstants.BASE_URL + "slok/$chapter/$verse/gita.svg")
+            if (isAdded) {
+                navigate(destination)
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Please try again late! Server error", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun changeMenuIcon(menu: Menu) {

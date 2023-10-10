@@ -62,7 +62,11 @@
         android:id="@+id/liked"
         android:name="com.example.bhagavadgitaapp.ui.fragment.FragmentLikedSlok"
         tools:layout="@layout/fragment_liked_slok"
-        />
+        >
+        <action
+            android:id="@+id/action_liked_to_verseDetail"
+            app:destination="@id/verseDetail" />
+    </fragment>
 
     <fragment
         android:id="@+id/webViewVerse"
@@ -77,5 +81,19 @@
 
     </fragment>
 
+    <fragment
+        android:id="@+id/verseDetail"
+        android:name="com.example.bhagavadgitaapp.ui.fragment.FragmentViewAllVerse"
+        tools:layout="@layout/fragment_fragemnt_view_all_verse"
+        >
+        <argument
+            android:name="verse"
+            app:argType="string"
+            />
+
+        <argument
+            android:name="chapter"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

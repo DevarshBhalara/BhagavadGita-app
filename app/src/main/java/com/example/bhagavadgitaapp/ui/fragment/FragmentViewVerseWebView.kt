@@ -21,6 +21,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.databinding.FragmentViewVerseWebViewBinding
+import com.example.bhagavadgitaapp.helper.PreferenceHelper
+import com.example.bhagavadgitaapp.utils.AppConstants
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -35,6 +37,7 @@ class FragmentViewVerseWebView : Fragment(), MenuProvider {
 
     lateinit var binding: FragmentViewVerseWebViewBinding
     private val navArgs: FragmentViewVerseWebViewArgs by navArgs()
+    private lateinit var preferenceHelper: PreferenceHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,14 +55,14 @@ class FragmentViewVerseWebView : Fragment(), MenuProvider {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupUI() {
+        preferenceHelper = PreferenceHelper(requireContext())
         setupMenuBar()
         binding.webView.webViewClient = WebViewClient()
         binding.webView.webChromeClient = WebChromeClient()
         binding.webView.settings.javaScriptEnabled = true
         binding.webView.settings.loadWithOverviewMode = true
 
-        val url = navArgs.url
-        binding.webView.loadUrl(url)
+        binding.webView.loadUrl(navArgs.url)
     }
 
     private fun setupMenuBar() {
@@ -67,7 +70,8 @@ class FragmentViewVerseWebView : Fragment(), MenuProvider {
     }
 
     private fun captureWebPage() {
-
+        val chapter = preferenceHelper.getString(AppConstants.lastReadChapter, "0")
+        val verse = preferenceHelper.getString(AppConstants.lastReadVerseNum, "0")
         try {
             // Create a WebView screenshot
             binding.webView.measure(
@@ -85,7 +89,7 @@ class FragmentViewVerseWebView : Fragment(), MenuProvider {
 
             val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "${timeStamp}_bhagavad_geeta.png"
+            val fileName = "${timeStamp}_chapter-${chapter}-verse-${verse}.png"
             val file = File(directory, fileName)
 
             val outputStream: OutputStream = FileOutputStream(file)
