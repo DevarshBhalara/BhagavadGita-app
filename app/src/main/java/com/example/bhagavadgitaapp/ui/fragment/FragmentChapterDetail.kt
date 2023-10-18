@@ -82,7 +82,7 @@ class FragmentChapterDetail : Fragment(), MenuProvider {
         preferenceHelper = PreferenceHelper(requireContext())
         chapterNumber = navArgs.chapterNumber
         binding.btnViewAllVerse.setOnClickListener {
-            val destination = FragmentChapterDetailDirections.actionChapterDetailToVerse(verseCount.toString(), chapterNumber, false)
+            val destination = FragmentChapterDetailDirections.actionChapterDetailToVerse(verseCount.toString(), chapterNumber, false, false)
             findNavController().navigate(destination)
         }
         getChapterDetails()

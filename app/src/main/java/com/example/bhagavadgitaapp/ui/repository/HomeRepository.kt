@@ -2,6 +2,7 @@ package com.example.bhagavadgitaapp.ui.repository
 
 import android.util.Log
 import com.example.bhagavadgitaapp.data.remote.Chapter
+import com.example.bhagavadgitaapp.data.remote.ChapterDetail
 import com.example.bhagavadgitaapp.data.remote.Slok
 import com.example.bhagavadgitaapp.data.services.ApiService
 import com.example.bhagavadgitaapp.utils.Resource
@@ -20,7 +21,7 @@ class HomeRepository(private val apiService: ApiService) : BaseRepository() {
                 emit(resource)
             }
         } catch (e: Exception) {
-            Log.d("response", e.localizedMessage)
+            Log.d("response", e.localizedMessage ?: "Something went wrong")
         }
 
     }.flowOn(Dispatchers.IO)
@@ -33,7 +34,19 @@ class HomeRepository(private val apiService: ApiService) : BaseRepository() {
                 emit(resource)
             }
         } catch (e: Exception) {
-            Log.d("response", e.localizedMessage)
+            Log.d("response", e.localizedMessage ?: "Something went wrong")
+        }
+    }.flowOn(Dispatchers.IO)
+
+    suspend fun getChapterSlok(ch: Int) = flow<Resource<ChapterDetail>> {
+        emit(Resource.Loading())
+        try {
+            apiService.getParticularChapter(ch.toString()).let { response ->
+                val resource = handleResponse(response)
+                emit(resource)
+            }
+        } catch (e: Exception) {
+            Log.d("response", e.localizedMessage ?: "Something went wrong")
         }
     }.flowOn(Dispatchers.IO)
 }
