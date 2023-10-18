@@ -58,9 +58,11 @@ class FragmentChapterDetail : Fragment(), MenuProvider {
                         verseCount = chapter.versesCount ?: 0
                         val selectedLanguage = preferenceHelper.getString("lan", "en")
                         if (selectedLanguage == "hi") {
+                            it.userSelectedName = it.name
                             it.userSelectedLanguageMeaning = it.meaningHindi
                             it.userSelectedLanguageSummary = it.summaryHindi
                         } else {
+                            it.userSelectedName = it.translation
                             it.userSelectedLanguageMeaning = it.meaningEnglish
                             it.userSelectedLanguageSummary = it.summaryEnglish
                         }
@@ -73,11 +75,6 @@ class FragmentChapterDetail : Fragment(), MenuProvider {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.e("lanCh", preferenceHelper.getString("lan", "NA"))
-    }
-
     private fun setupUI() {
         preferenceHelper = PreferenceHelper(requireContext())
         chapterNumber = navArgs.chapterNumber
@@ -88,7 +85,6 @@ class FragmentChapterDetail : Fragment(), MenuProvider {
         getChapterDetails()
         setupMenuBar()
         handleNextPrevious()
-
     }
 
     private fun getChapterDetails() {
@@ -125,21 +121,6 @@ class FragmentChapterDetail : Fragment(), MenuProvider {
         (requireActivity() as MenuHost).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun changeLanguage() {
-        val selectedLanguage = preferenceHelper.getString("lan", "en")
-        if (selectedLanguage == "hi") {
-            chapterLocal.userSelectedName = chapterLocal.name
-            chapterLocal.userSelectedLanguageMeaning = chapterLocal.meaningHindi
-            chapterLocal.userSelectedLanguageSummary = chapterLocal.summaryHindi
-        } else {
-            chapterLocal.userSelectedName = chapterLocal.translation
-            chapterLocal.userSelectedLanguageMeaning = chapterLocal.meaningEnglish
-            chapterLocal.userSelectedLanguageSummary = chapterLocal.summaryEnglish
-        }
-        binding.chapter = chapterLocal
-        binding.executePendingBindings()
-    }
-
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menu.clear()
         menuInflater.inflate(R.menu.chapter_detial_menu, menu)
@@ -157,5 +138,18 @@ class FragmentChapterDetail : Fragment(), MenuProvider {
             }
         }
         return false
+    }
+
+    private fun changeLanguage() {
+        if (preferenceHelper.getString("lan", "en") == "hi") {
+            chapterLocal.userSelectedName = chapterLocal.name
+            chapterLocal.userSelectedLanguageMeaning = chapterLocal.meaningHindi
+            chapterLocal.userSelectedLanguageSummary = chapterLocal.summaryHindi
+        } else {
+            chapterLocal.userSelectedName = chapterLocal.translation
+            chapterLocal.userSelectedLanguageMeaning = chapterLocal.meaningEnglish
+            chapterLocal.userSelectedLanguageSummary = chapterLocal.summaryEnglish
+        }
+        binding.chapter = chapterLocal
     }
 }

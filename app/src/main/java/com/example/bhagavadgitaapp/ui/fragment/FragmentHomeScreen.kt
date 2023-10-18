@@ -113,17 +113,30 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
         }
     }
 
+
+    override fun onPause() {
+        super.onPause()
+        binding.shimmerLayout.stopShimmer()
+        binding.shimmerLayout.visibility = View.GONE
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        preferenceHelper.putString(AppConstants.currentDate, getCurrentDate())
+    }
+
+
     private fun setupUI() {
         binding.shimmerLayout.visibility = View.VISIBLE
         binding.isDataAvailable = false
         preferenceHelper = PreferenceHelper(requireContext())
         customClassData = CustomClassData(requireContext())
         setupMenuBar()
-        getLastRead()
         if (preferenceHelper.getString(AppConstants.currentDate, "") == getCurrentDate()) {
             customClassData.getCustomClass()?.let {
                 slokDetailLocal = it
-                binding.slokData = slokDetailLocal
+                changeLanguage()
                 binding.shimmerLayout.stopShimmer()
                 binding.shimmerLayout.visibility = View.GONE
                 binding.isDataAvailable = true
@@ -135,6 +148,7 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
             val (ch, slok) = calculateRandomSlokNumber()
             viewModel.getRandomSlok(ch, slok)
         }
+        getLastRead()
         setupRecyclerView()
 
         binding.btnReadThis.setOnClickListener {
@@ -152,39 +166,12 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
         (requireActivity() as MenuHost).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun changeLanguage() {
-        if (preferenceHelper.getString("lan", "en") == "en") {
-            slokDetailLocal.userSelectedLanguageSlok = slokDetailLocal.slokEnglish
-            slokDetailLocal.lastReadUserLanguage = slokDetailLocal.lastReadSlokEnglish
-        } else {
-            slokDetailLocal.userSelectedLanguageSlok = slokDetailLocal.slokHindi
-            slokDetailLocal.lastReadUserLanguage = slokDetailLocal.lastReadSlokHindi
-        }
-        binding.slokData = slokDetailLocal
-        binding.executePendingBindings()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        binding.shimmerLayout.stopShimmer()
-        binding.shimmerLayout.visibility = View.GONE
-    }
-
-    @SuppressLint("NewApi")
-    fun getCurrentDate(): String {
-        val currentDate = LocalDate.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd") // Define the date format you want
-        return currentDate.format(formatter)
-    }
 
     private fun getLastRead() {
-        val isLastReadAvailable = preferenceHelper.getBoolean("isLastRead", false)
-        if (isLastReadAvailable) {
+        binding.isLastReadAvailable = preferenceHelper.getBoolean("isLastRead", false)
+        if (binding.isLastReadAvailable) {
             binding.isLastReadAvailable = true
-            binding.tvLastReadVerse.text =
-                preferenceHelper.getString(AppConstants.lastReadTranslationEnglish, "")
-        } else {
-            binding.isLastReadAvailable = false
+            binding.tvLastReadVerse.text = slokDetailLocal.lastReadUserLanguage
         }
 
         binding.btnContinueReading.setOnClickListener {
@@ -206,16 +193,9 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
             }
 
             override fun onLikeClick(item: Chapter, position: Int) {
-                // Nothig
+                // Nothing
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.e("lan", preferenceHelper.getString("lan", "NA"))
-        preferenceHelper.putString(AppConstants.currentDate, getCurrentDate())
-        getLastRead()
     }
 
     private fun navigateToChapterDetail(item: Int?) {
@@ -224,14 +204,6 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
                 FragmentHomeScreenDirections.actionHomeFragmentToChapterDetail(chapterNumber.toString())
             findNavController().navigate(destination)
         }
-    }
-
-    private fun calculateRandomSlokNumber(): Pair<Int, Int> {
-        val slokCount =
-            listOf(47, 72, 43, 42, 29, 47, 30, 28, 34, 42, 55, 20, 35, 27, 20, 24, 28, 78)
-        val chapter = (floor(Math.random() * 17) + 1).toInt()
-        val slok = (floor(Math.random() * slokCount[(chapter - 1)]) + 1).toInt()
-        return chapter to slok
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -253,5 +225,35 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
         }
         return false
     }
+
+
+    private fun changeLanguage() {
+        if (preferenceHelper.getString("lan", "en") == "en") {
+            slokDetailLocal.userSelectedLanguageSlok = slokDetailLocal.slokEnglish
+            slokDetailLocal.lastReadUserLanguage = slokDetailLocal.lastReadSlokEnglish
+        } else {
+            slokDetailLocal.userSelectedLanguageSlok = slokDetailLocal.slokHindi
+            slokDetailLocal.lastReadUserLanguage = slokDetailLocal.lastReadSlokHindi
+        }
+        customClassData.saveCustomClass(slokDetailLocal)
+        binding.slokData = slokDetailLocal
+        binding.executePendingBindings()
+    }
+
+    @SuppressLint("NewApi")
+    fun getCurrentDate(): String {
+        val currentDate = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd") // Define the date format you want
+        return currentDate.format(formatter)
+    }
+
+    private fun calculateRandomSlokNumber(): Pair<Int, Int> {
+        val slokCount =
+            listOf(47, 72, 43, 42, 29, 47, 30, 28, 34, 42, 55, 20, 35, 27, 20, 24, 28, 78)
+        val chapter = (floor(Math.random() * 17) + 1).toInt()
+        val slok = (floor(Math.random() * slokCount[(chapter - 1)]) + 1).toInt()
+        return chapter to slok
+    }
+
 
 }
