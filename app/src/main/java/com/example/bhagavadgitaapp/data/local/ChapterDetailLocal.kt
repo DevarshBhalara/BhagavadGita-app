@@ -1,10 +1,5 @@
 package com.example.bhagavadgitaapp.data.local
 
-import com.example.bhagavadgitaapp.data.remote.Meaning
-import com.example.bhagavadgitaapp.data.remote.Summary
-import com.example.bhagavadgitaapp.helper.PreferenceHelper
-import com.google.gson.annotations.SerializedName
-
 data class ChapterDetailLocal(
     val chapterNumber: Int? = null,
     val versesCount: Int? = null,
