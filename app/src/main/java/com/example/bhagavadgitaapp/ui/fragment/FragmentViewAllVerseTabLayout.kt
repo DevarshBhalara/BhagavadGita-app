@@ -98,7 +98,6 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
                         isSaved = it
                         menuLocal?.let { menu ->
                             changeMenuIcon(menu)
-                            Snackbar.make(binding.root, "Saved Successfully!", Snackbar.LENGTH_SHORT).show()
                         }
                         viewModel.isSlokSaved(preferenceHelper.getString(AppConstants.lastReadChapter, "0"), (binding.tabLayout.selectedTabPosition + 1).toString())
                     }
@@ -111,7 +110,6 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
                         isSaved = !isRemoved
                         menuLocal?.let {
                             changeMenuIcon(it)
-                            Snackbar.make(binding.root, "Removed Successfully!", Snackbar.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -166,9 +164,11 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
                             ),
                         )
                     )
+                    Snackbar.make(binding.root, "Saved Successfully!", Snackbar.LENGTH_SHORT).show()
                 } else {
                     currentSavedSlok?.let {
                         viewModel.removeSlok(it)
+                        Snackbar.make(binding.root, "Removed Successfully!", Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -207,9 +207,9 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
         item?.let {
             if (isSaved) {
                 item.icon =
-                    AppCompatResources.getDrawable(requireContext(), R.drawable.ic_heart_active_24)
+                    AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_bookmark_24)
             } else {
-                item.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_heart_24)
+                item.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_bookmark_border_24)
             }
         }
     }
@@ -235,13 +235,15 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
         }.attach()
 
         if (navArgs.isContinueReading) {
-            val tab = binding.tabLayout.getTabAt(
-                preferenceHelper.getString(
-                    AppConstants.lastReadVerseNum,
-                    "0"
-                ).toInt() - 1
-            )
+            val tab = binding.tabLayout.getTabAt(preferenceHelper.getString(AppConstants.lastReadVerseNum, "0").toInt() - 1)
             tab?.select()
+            viewModel.isSlokSaved(chapter.toString(), (tab).toString())
+        }
+
+        if(navArgs.isRandomSlok) {
+            val tab = binding.tabLayout.getTabAt(preferenceHelper.getString(AppConstants.lastRandomVerseCount, "0").toInt() - 1)
+            tab?.select()
+            viewModel.isSlokSaved(chapter.toString(), (tab).toString())
         }
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -260,12 +262,10 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 // Do Nothing
             }
-
         })
     }
 
     private fun setLastRead(lastRead: LastRead) {
-        Log.e("call", preferenceHelper.getString(AppConstants.lastReadVerseNum, "0"))
         preferenceHelper.putBoolean(AppConstants.isLastRead, true)
         preferenceHelper.putString(AppConstants.lastReadChapter, lastRead.chapter)
         preferenceHelper.putString(AppConstants.lastReadVerseNum, lastRead.verse)

@@ -1,10 +1,8 @@
 package com.example.bhagavadgitaapp.ui.viewmodel
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bhagavadgitaapp.data.local.DisplayRandomSlok
 import com.example.bhagavadgitaapp.data.local.HomeScreenLocal
 import com.example.bhagavadgitaapp.data.remote.Chapter
 import com.example.bhagavadgitaapp.ui.repository.HomeRepository
@@ -32,6 +30,9 @@ class HomeScreenViewModel @Inject constructor(
 
     private val _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
+
+    private val _totalVerse = MutableStateFlow("")
+    val totalVerse = _totalVerse.asStateFlow()
 
 
     init {
@@ -80,6 +81,8 @@ class HomeScreenViewModel @Inject constructor(
                                     slok.tej?.ht,
                                     slok.siva?.et,
                                     slok.slok,
+                                    verseNumber = slok.verse,
+                                    chapter = slok.chapter
                                 )
                             )
 //                            _randomSlok.emit(slok.siva?.et?.let { DisplayRandomSlok(it, slok.chapter, slok.verse) })
@@ -91,6 +94,28 @@ class HomeScreenViewModel @Inject constructor(
                         resource.message?.let {
                             _errorMessage.emit(it)
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getChapter(chapterNumber: Int) {
+        viewModelScope.launch {
+            homeRepository.getChapterSlok(chapterNumber).collectLatest { resource ->
+                when(resource) {
+                    is Resource.Loading -> {
+                        _isLoading.emit(true)
+                    }
+
+                    is Resource.Success -> {
+                        resource.data?.let {
+                            _totalVerse.emit(it.versesCount.toString())
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _errorMessage.emit(resource.message ?: "Please try Again!")
                     }
                 }
             }

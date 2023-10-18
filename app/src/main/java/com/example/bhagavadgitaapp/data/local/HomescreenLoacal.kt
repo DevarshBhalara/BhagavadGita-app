@@ -7,5 +7,7 @@ data class HomeScreenLocal(
     var userSelectedLanguageSlok: String? = null,
     var lastReadSlokHindi: String? = null,
     var lastReadSlokEnglish: String? = null,
-    var lastReadUserLanguage: String? = null
+    var lastReadUserLanguage: String? = null,
+    var chapter: Int? = null,
+    var verseNumber: Int? = null
 )

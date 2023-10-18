@@ -20,6 +20,7 @@ import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.local.HomeScreenLocal
 import com.example.bhagavadgitaapp.data.remote.Chapter
 import com.example.bhagavadgitaapp.databinding.FragmentHomeScreenBinding
+import com.example.bhagavadgitaapp.helper.CustomClassData
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
 import com.example.bhagavadgitaapp.listners.ItemClickListener
 import com.example.bhagavadgitaapp.ui.adapter.RVChapterAdapter
@@ -28,6 +29,8 @@ import com.example.bhagavadgitaapp.utils.AppConstants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.floor
 
 @AndroidEntryPoint
@@ -38,6 +41,8 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
     private val adapter = RVChapterAdapter()
     private lateinit var preferenceHelper: PreferenceHelper
     private lateinit var slokDetailLocal: HomeScreenLocal
+    private var totalVerseRandom = ""
+    private lateinit var customClassData: CustomClassData
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,6 +89,18 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
                         binding.shimmerLayout.stopShimmer()
                         binding.shimmerLayout.visibility = View.GONE
                         binding.isDataAvailable = true
+
+                        preferenceHelper.putString(AppConstants.lastRandomVerseCount, it.verseNumber.toString())
+                        it.chapter?.let { it1 -> viewModel.getChapter(it1) }
+                        customClassData.saveCustomClass(slokDetailLocal)
+                    }
+                }
+            }
+
+            launch {
+                viewModel.totalVerse.collectLatest { totalVerse ->
+                    if (totalVerse.isNotEmpty()) {
+                        totalVerseRandom = totalVerse
                     }
                 }
             }
@@ -100,11 +117,35 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
         binding.shimmerLayout.visibility = View.VISIBLE
         binding.isDataAvailable = false
         preferenceHelper = PreferenceHelper(requireContext())
+        customClassData = CustomClassData(requireContext())
         setupMenuBar()
         getLastRead()
-        val (ch, slok) = calculateRandomSlokNumber()
-        viewModel.getRandomSlok(ch, slok)
+        if (preferenceHelper.getString(AppConstants.currentDate, "") == getCurrentDate()) {
+            customClassData.getCustomClass()?.let {
+                slokDetailLocal = it
+                binding.slokData = slokDetailLocal
+                binding.shimmerLayout.stopShimmer()
+                binding.shimmerLayout.visibility = View.GONE
+                binding.isDataAvailable = true
+
+                preferenceHelper.putString(AppConstants.lastRandomVerseCount, it.verseNumber.toString())
+                it.chapter?.let { it1 -> viewModel.getChapter(it1) }
+            }
+        } else {
+            val (ch, slok) = calculateRandomSlokNumber()
+            viewModel.getRandomSlok(ch, slok)
+        }
         setupRecyclerView()
+
+        binding.btnReadThis.setOnClickListener {
+            val destination = FragmentHomeScreenDirections.actionHomeFragmentToVerse(
+                totalVerseRandom,
+                slokDetailLocal.chapter.toString(),
+                false,
+                true
+            )
+            findNavController().navigate(destination)
+        }
     }
 
     private fun setupMenuBar() {
@@ -129,6 +170,13 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
         binding.shimmerLayout.visibility = View.GONE
     }
 
+    @SuppressLint("NewApi")
+    fun getCurrentDate(): String {
+        val currentDate = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd") // Define the date format you want
+        return currentDate.format(formatter)
+    }
+
     private fun getLastRead() {
         val isLastReadAvailable = preferenceHelper.getBoolean("isLastRead", false)
         if (isLastReadAvailable) {
@@ -138,13 +186,13 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
         } else {
             binding.isLastReadAvailable = false
         }
-        Log.e("con", preferenceHelper.getString(AppConstants.lastChapterVerseCount, "1"))
-        Log.e("conCh", preferenceHelper.getString(AppConstants.lastReadChapter, "1"))
+
         binding.btnContinueReading.setOnClickListener {
             val destination = FragmentHomeScreenDirections.actionHomeFragmentToVerse(
                 preferenceHelper.getString(AppConstants.lastChapterVerseCount, "1"),
                 preferenceHelper.getString(AppConstants.lastReadChapter, "1"),
-                true
+                true,
+                false
             )
             findNavController().navigate(destination)
         }
@@ -156,12 +204,17 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
             override fun onClick(item: Chapter, position: Int) {
                 navigateToChapterDetail(item.chapterNumber)
             }
+
+            override fun onLikeClick(item: Chapter, position: Int) {
+                // Nothig
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
         Log.e("lan", preferenceHelper.getString("lan", "NA"))
+        preferenceHelper.putString(AppConstants.currentDate, getCurrentDate())
         getLastRead()
     }
 

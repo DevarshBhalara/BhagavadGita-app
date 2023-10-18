@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
@@ -55,6 +54,10 @@ class FragmentLikedSlok : Fragment(), MenuProvider {
             launch {
                 viewModel.savedVerse.collectLatest {
                     if (it.isNotEmpty()) {
+                        binding.tvNoSaved.visibility = View.GONE
+                        adapter.submitList(it)
+                    } else {
+                        binding.tvNoSaved.visibility = View.VISIBLE
                         adapter.submitList(it)
                     }
                 }

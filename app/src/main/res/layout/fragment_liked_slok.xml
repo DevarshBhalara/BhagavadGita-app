@@ -7,6 +7,18 @@
         android:layout_height="match_parent"
         tools:context=".ui.fragment.FragmentLikedSlok">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_items_in_saved_please_add_some"
+            android:id="@+id/tvNoSaved"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textAlignment="center"
+            android:textSize="@dimen/_16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvLikedVerse"
             android:padding="@dimen/_16dp"

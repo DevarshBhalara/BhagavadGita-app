@@ -15,6 +15,10 @@ object AppConstants {
     const val lastReadTranslationHindi = "lastReadTranslationHindi"
     const val lastReadTranslationEnglish = "lastReadTranslationEnglish"
     const val lastChapterVerseCount = "lastChapterVerseCount"
+    const val lastRandomVerseCount = "lastRandomVerseCount"
+
+    const val currentDate = "currentDate"
+    const val homeScreenLocal = "homeScreenLocal"
 
     const val database = "slok_local"
 }

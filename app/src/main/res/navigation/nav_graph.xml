@@ -52,6 +52,12 @@
             android:name="isContinueReading"
             app:argType="boolean" />
 
+
+        <argument
+            android:name="isRandomSlok"
+            app:argType="boolean"
+            />
+
         <action
             android:id="@+id/action_verse_to_webViewVerse"
             app:destination="@id/webViewVerse" />

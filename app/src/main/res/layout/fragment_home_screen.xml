@@ -93,15 +93,30 @@
                         app:layout_constraintTop_toBottomOf="@id/cardTitle"
                         android:layout_marginTop="@dimen/_16dp"
                         android:textColor="@color/white"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         android:textStyle="bold"
                         android:maxLines="4"
                         android:textSize="@dimen/_14sp"
-                        android:paddingBottom="@dimen/_16dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@{ slokData.userSelectedLanguageSlok }"
                         tools:text="@string/dummy_verse" />
+
+                    <Button
+                        android:id="@+id/btnReadThis"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAllCaps="true"
+                        tools:text="@string/read_this"
+                        android:visibility="@{ isLastReadAvailable ? View.VISIBLE : View.GONE }"
+                        android:text="@{ isDataAvailable ? @string/read_this : `` }"
+                        app:layout_constraintTop_toBottomOf="@id/verse"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@android:color/transparent"
+                        android:padding="@dimen/_0dp"
+                        android:paddingStart="@dimen/_16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:ignore="RtlSymmetry" />
+
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -155,17 +170,6 @@
                 app:layout_constraintTop_toBottomOf="@id/btnContinueReading"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/_16dp"/>
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/btnFliter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="@{ isDataAvailable ? View.VISIBLE : View.GONE }"
-                android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/baseline_sort_24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tvChapters"
-                app:layout_constraintBottom_toBottomOf="@id/tvChapters"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvChapter"

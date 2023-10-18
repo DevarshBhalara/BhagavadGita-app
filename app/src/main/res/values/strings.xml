@@ -20,4 +20,8 @@
     <string name="liked">Liked</string>
     <string name="like">Like</string>
     <string name="download">Download</string>
+    <string name="no_items_in_saved_please_add_some">No items in Saved! Please Add some…</string>
+    <string name="saved">Saved</string>
+    <string name="read_this">Read this</string>
+    <string name="random_verse">Random Verse</string>
 </resources>
