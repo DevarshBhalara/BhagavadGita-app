@@ -99,7 +99,7 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
                         menuLocal?.let { menu ->
                             changeMenuIcon(menu)
                         }
-                        viewModel.isSlokSaved(preferenceHelper.getString(AppConstants.lastReadChapter, "0"), (binding.tabLayout.selectedTabPosition + 1).toString())
+//                        viewModel.isSlokSaved(preferenceHelper.getString(AppConstants.lastReadChapter, "0"), (binding.tabLayout.selectedTabPosition + 1).toString())
                     }
                 }
             }
@@ -127,7 +127,7 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
 
     /** Menu Bar */
     private fun setupMenuBar() {
-        (requireActivity()).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.STARTED)
+        (requireActivity()).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -177,7 +177,7 @@ class FragmentViewAllVerseTabLayout : Fragment(), MenuProvider {
                 goToWebViewPage()
             }
         }
-        return false
+        return true
     }
 
     override fun onPrepareMenu(menu: Menu) {
