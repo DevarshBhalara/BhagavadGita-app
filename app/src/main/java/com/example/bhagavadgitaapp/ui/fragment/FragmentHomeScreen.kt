@@ -107,6 +107,10 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
 
             launch {
                 viewModel.chapters.collectLatest { chapters ->
+                    if(chapters.isNotEmpty()) {
+                        binding.shimmerChapter.stopShimmer()
+                        binding.shimmerChapter.visibility = View.GONE
+                    }
                     adapter.submitList(chapters)
                 }
             }
@@ -117,7 +121,9 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
     override fun onPause() {
         super.onPause()
         binding.shimmerLayout.stopShimmer()
+        binding.shimmerChapter.stopShimmer()
         binding.shimmerLayout.visibility = View.GONE
+        binding.shimmerChapter.visibility = View.GONE
     }
 
 
@@ -129,6 +135,7 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
 
     private fun setupUI() {
         binding.shimmerLayout.visibility = View.VISIBLE
+        binding.shimmerChapter.visibility = View.VISIBLE
         binding.isDataAvailable = false
         preferenceHelper = PreferenceHelper(requireContext())
         customClassData = CustomClassData(requireContext())

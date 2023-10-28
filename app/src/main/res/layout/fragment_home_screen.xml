@@ -42,15 +42,24 @@
                 android:visibility="gone"
                 android:orientation="vertical"
                 >
+                <include layout="@layout/data_placeholder_layout_home" />
 
-                <!-- Adding 7 rows of placeholders -->
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                app:layout_constraintTop_toBottomOf="@id/tvChapters"
+                android:id="@+id/shimmerChapter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:visibility="gone"
+                android:orientation="vertical"
+                >
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-                    <include layout="@layout/data_placeholder_layout_home" />
-
-                    <include layout="@layout/data_placeholder_layout_chapter" />
                     <include layout="@layout/data_placeholder_layout_chapter" />
                     <include layout="@layout/data_placeholder_layout_chapter" />
                     <include layout="@layout/data_placeholder_layout_chapter" />

@@ -1,10 +1,10 @@
 package com.example.bhagavadgitaapp.ui.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -23,7 +24,6 @@ import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.databinding.FragmentViewVerseWebViewBinding
 import com.example.bhagavadgitaapp.helper.PreferenceHelper
 import com.example.bhagavadgitaapp.utils.AppConstants
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
@@ -87,17 +87,26 @@ class FragmentViewVerseWebView : Fragment(), MenuProvider {
             val bitmap = Bitmap.createBitmap(1750, 1600, Bitmap.Config.ARGB_8888)
             binding.webView.draw(Canvas(bitmap))
 
-            val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val cacheDir = requireContext().externalCacheDir
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val fileName = "${timeStamp}_chapter-${chapter}-verse-${verse}.png"
-            val file = File(directory, fileName)
+            val file = File(cacheDir, fileName)
 
             val outputStream: OutputStream = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
             outputStream.flush()
             outputStream.close()
 
-            Snackbar.make(binding.root, "Image saved in Download folder!", Snackbar.LENGTH_SHORT).show()
+            // Create an intent to share the image
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "image/*"
+            shareIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(requireContext(), requireContext().packageName + ".provider", file))
+
+            // Grant temporary read permission to the receiver app
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+            // Start the sharing intent
+            startActivity(Intent.createChooser(shareIntent, "Share Image"))
 
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Failed to Save please try again!", Toast.LENGTH_SHORT).show()
