@@ -171,7 +171,6 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
         binding.isLastReadAvailable = preferenceHelper.getBoolean("isLastRead", false)
         if (binding.isLastReadAvailable) {
             binding.isLastReadAvailable = true
-            binding.tvLastReadVerse.text = slokDetailLocal.lastReadUserLanguage
         }
 
         binding.btnContinueReading.setOnClickListener {
@@ -230,10 +229,10 @@ class FragmentHomeScreen : Fragment(), MenuProvider {
     private fun changeLanguage() {
         if (preferenceHelper.getString("lan", "en") == "en") {
             slokDetailLocal.userSelectedLanguageSlok = slokDetailLocal.slokEnglish
-            slokDetailLocal.lastReadUserLanguage = slokDetailLocal.lastReadSlokEnglish
+            slokDetailLocal.lastReadUserLanguage = preferenceHelper.getString(AppConstants.lastReadTranslationEnglish, "NA")
         } else {
             slokDetailLocal.userSelectedLanguageSlok = slokDetailLocal.slokHindi
-            slokDetailLocal.lastReadUserLanguage = slokDetailLocal.lastReadSlokHindi
+            slokDetailLocal.lastReadUserLanguage = preferenceHelper.getString(AppConstants.lastReadTranslationHindi, "NA")
         }
         customClassData.saveCustomClass(slokDetailLocal)
         binding.slokData = slokDetailLocal

@@ -11,7 +11,7 @@ interface SavedSlokDao {
     @Insert
     suspend fun insertAll(vararg slok: SavedSlok): List<Long>
 
-    @Query("select * from saved_slok order by id desc")
+    @Query("select  DISTINCT slok, id, chapter, verse, hindiTranslation, englishTranslation from saved_slok order by id desc")
     suspend fun getAll(): List<SavedSlok>
 
     @Delete

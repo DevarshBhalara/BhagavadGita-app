@@ -24,12 +24,14 @@
             />
 
         <TextView
+            android:id="@+id/translation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:text="@string/dummy_verse"
             android:textColor="@color/black"
-            android:padding="@dimen/_16dp"
+            android:paddingTop="@dimen/_16dp"
+            android:paddingHorizontal="@dimen/_16dp"
             android:text="@{translations.content}"
             />
 
