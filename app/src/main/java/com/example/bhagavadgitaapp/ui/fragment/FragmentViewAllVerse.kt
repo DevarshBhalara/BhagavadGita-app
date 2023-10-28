@@ -12,8 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.example.bhagavadgitaapp.R
 import com.example.bhagavadgitaapp.data.local.Authors
 import com.example.bhagavadgitaapp.data.local.LastRead
 import com.example.bhagavadgitaapp.databinding.FragmentFragemntViewAllVerseBinding
@@ -73,7 +75,9 @@ class FragmentViewAllVerse() : Fragment(), MenuProvider {
                             it.authors[0].hindiTranslation.toString(),
                             it.authors[1].englishTranslation.toString()
                         )
-                        setLastRead(lastRead!!)
+                        if (chapter != -1 && verse != -1) {
+                            setLastRead(lastRead!!)
+                        }
                     }
                 }
             }
@@ -83,13 +87,18 @@ class FragmentViewAllVerse() : Fragment(), MenuProvider {
     override fun onResume() {
         super.onResume()
         if (chapter == -1 && verse == -1) {
+            setupMenuBar()
             viewModel.getSlok(navArgs.chapter.toInt(), navArgs.verse.toInt())
         } else {
             viewModel.getSlok(chapter, verse)
+            lastRead?.let {
+                setLastRead(it)
+            }
         }
-        lastRead?.let {
-            setLastRead(it)
-        }
+    }
+
+    private fun setupMenuBar() {
+        (requireActivity()).addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
     private fun setLastRead(lastRead: LastRead) {
@@ -101,7 +110,7 @@ class FragmentViewAllVerse() : Fragment(), MenuProvider {
             AppConstants.lastReadTranslationEnglish,
             lastRead.translationEnglish
         )
-        Log.e("last", lastRead.toString())
+        Log.e("lastRead", lastRead.toString())
     }
 
     private fun setupUI() {
@@ -121,18 +130,16 @@ class FragmentViewAllVerse() : Fragment(), MenuProvider {
                 // No thing
             }
         }
-        if (chapter == -1 && verse == -1) {
-            viewModel.getSlok(navArgs.chapter.toInt(), navArgs.verse.toInt())
-        } else {
-            viewModel.getSlok(chapter, verse)
-        }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menu.clear()
+        if (chapter == -1 && verse == -1) {
+            menuInflater.inflate(R.menu.menu_empty, menu)
+        }
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return false
+        return true
     }
 }
